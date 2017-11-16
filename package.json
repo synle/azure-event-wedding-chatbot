@@ -11,6 +11,9 @@
   "license": "ISC",
   "dependencies": {
     "botbuilder": "^3.11.0",
-    "restify": "^6.3.2"
+    "lodash": "^4.17.4",
+    "moment": "^2.19.2",
+    "restify": "^6.3.2",
+    "sequelize-simple-adapter": "github:synle/sequelize-simple-adapter"
   }
 }
