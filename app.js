@@ -19,55 +19,79 @@ server.post('/api/messages', connector.listen());
 
 
 
+var all_events = [
+    {
+        title: 'Peter & Mary Wedding',
+        location: 'NestDown, Los Gatos, CA',
+        eventDate: '11/20/2017',
+        eventTime: '6PM',
+        description: 'Peter & Mary wedding in NestDown',
+    },
+    {
+        title: 'Bob & Connie Wedding',
+        location: 'Saratoga Country winery, Saratoga, CA',
+        eventDate: '11/21/2017',
+        eventTime: '7PM',
+        description: 'Bob & Connie Wedding in Saratoga Country winery',
+    }
+]
+
 // This is a dinner reservation bot that uses multiple dialogs to prompt users for input.
 var bot = new builder.UniversalBot(connector, [
     function (session) {
-        session.send("Welcome to the dinner reservation.");
-        session.beginDialog('askForDateTime');
+        session.send("Welcome to Wedding Event Booking Service.");
+        session.beginDialog('askForDomain');
     },
     function (session, results) {
-        session.dialogData.reservationDate = builder.EntityRecognizer.resolveTime([results.response]);
-        session.beginDialog('askForPartySize');
-    },
-    function (session, results) {
-        session.dialogData.partySize = results.response;
-        session.beginDialog('askForReserverName');
-    },
-    function (session, results) {
-        session.dialogData.reservationName = results.response;
+        session.dialogData.domain = results.response;
+        console.log(session.dialogData.domain)
 
-        // Process request and display reservation details
-        session.send(`Reservation confirmed. Reservation details: <br/>Date/Time: ${session.dialogData.reservationDate} <br/>Party size: ${session.dialogData.partySize} <br/>Reservation name: ${session.dialogData.reservationName}`);
-        session.endDialog();
+        switch(session.dialogData.domain){
+            case 'events':
+                session.send('Below is the list of latest Events')
+                var my_events = all_events;
+                all_events.forEach(
+                    function(cur_event, cur_idx){
+                        session.send([
+                            `Event #${cur_idx}`,
+                            `- Title: ${cur_event.title}`,
+                            `- Date: ${cur_event.eventDate} ${cur_event.eventTime}`,
+                            `- Location: ${cur_event.location}`,
+                            // `Description: ${cur_event.description}`,
+                        ].join('\n'));
+                    }
+                )
+                break;
+            case 'comments':
+                session.send('Below is the list of latest Comments')
+                break;
+        }
+    },
+]);
+
+
+
+bot.dialog('askForDomain', [
+    function (session) {
+        builder.Prompts.choice(session, "How can I help?", ["Wedding Event", "Comment"]);
+    },
+    function (session, results) {
+        var domain = '';
+
+        switch(results.response.index){
+            case 0:
+                domain = 'events';
+                break;
+            case 1:
+                domain = 'comments';
+                break;
+        }
+
+
+        session.endDialogWithResult({
+            response: domain
+        });
     }
 ]);
 
-// Dialog to ask for a date and time
-bot.dialog('askForDateTime', [
-    function (session) {
-        builder.Prompts.time(session, "Please provide a reservation date and time (e.g.: June 6th at 5pm)");
-    },
-    function (session, results) {
-        session.endDialogWithResult(results);
-    }
-]);
 
-// Dialog to ask for number of people in the party
-bot.dialog('askForPartySize', [
-    function (session) {
-        builder.Prompts.text(session, "How many people are in your party?");
-    },
-    function (session, results) {
-        session.endDialogWithResult(results);
-    }
-])
-
-// Dialog to ask for the reservation name.
-bot.dialog('askForReserverName', [
-    function (session) {
-        builder.Prompts.text(session, "Who's name will this reservation be under?");
-    },
-    function (session, results) {
-        session.endDialogWithResult(results);
-    }
-]);
