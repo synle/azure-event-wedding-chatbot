@@ -1,9 +1,10 @@
 var restify = require('restify');
 var builder = require('botbuilder');
+var fs = require('fs')
 var dao = require('./dao');
 
 // Setup Restify Server
-var PORT = process.env.port || 3978;
+var PORT = process.env.port || 8080;
 console.log('Starting Server on PORT', PORT);
 var server = restify.createServer();
 server.listen(PORT, function () {
@@ -13,6 +14,29 @@ server.listen(PORT, function () {
 server.get('/', function(req, res){
     res.send('OK');
 })
+
+
+server.get('/index', function(req, res){
+    var body = fs.readFileSync('./view/index.html');
+    res.writeHead(200, {
+      'Content-Length': Buffer.byteLength(body),
+      'Content-Type': 'text/html'
+    });
+    res.write(body);
+    res.end();
+})
+
+
+server.get('/chatbot', function(req, res){
+    var body = fs.readFileSync('./view/chatbot.html');
+    res.writeHead(200, {
+      'Content-Length': Buffer.byteLength(body),
+      'Content-Type': 'text/html'
+    });
+    res.write(body);
+    res.end();
+})
+
 
 
 // Create chat connector for communicating with the Bot Framework Service
@@ -105,4 +129,14 @@ var bot = new builder.UniversalBot(connector, [
     // },
 ]);
 
+
+
+
+
+// var builder = require('botbuilder');
+
+// var connector = new builder.ConsoleConnector().listen();
+// var bot = new builder.UniversalBot(connector, function (session) {
+//     session.send("You said: %s", session.message.text);
+// });
 
