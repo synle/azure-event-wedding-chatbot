@@ -47,25 +47,14 @@ async function doWork(){
 
 
     // generate random events...
-    const data_events = [
-        {
-            eventId: 1,
-            user_id: 1,
-        },
-        {
-            eventId: 2,
-            user_id: 1,
-        }
-    ];
     const from_event_id = getRandomPosInteger(100000);
-
-    for (let i = 0; i < 4; i++){
+    const data_events = [];
+    for (let i = 0; i < getRandomFromRange(4, 8); i++){
         const eventId = getRandomPosInteger(500);
-        const eventOwner = getRandomItem(data_people);
 
         const event_to_insert = {
             eventId,
-            user_id: eventOwner.userId,
+            userId: 1,
         }
 
         data_events.push(event_to_insert);
@@ -77,7 +66,7 @@ async function doWork(){
 
         const event_to_insert = {
             eventId,
-            user_id: eventOwner.userId,
+            userId: eventOwner.userId,
         }
 
         data_events.push(event_to_insert);
@@ -257,7 +246,7 @@ async function doWork(){
             event_date: item.eventDate,
             event_time: item.eventTime,
             description: item.description,
-            user_id: item.user_id,
+            user_id: item.userId,
             voice_invite_key: item.voice_invite_key,
         };
 
