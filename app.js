@@ -1,4 +1,3 @@
-
 var restify = require('restify');
 var builder = require('botbuilder');
 var dao = require('./dao');
