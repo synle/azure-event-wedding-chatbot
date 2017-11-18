@@ -87,7 +87,7 @@ async function doWork(){
             .add(numDayInFuture, 'day')
             .add(numHourInFuture, 'hour');
         const eventDate = eventDateObject.format('MM/DD/YYYY');
-        const eventTime = eventDateObject.format('hh A');
+        const eventTime = eventDateObject.format('h A');
         // const eventTime = eventDateObject.format('hh:mm A');
 
 
@@ -121,7 +121,7 @@ async function doWork(){
             .add(numDayInFuture, 'day')
             .add(numHourInFuture, 'hour');
         const eventDate = eventDateObject.format('MM/DD/YYYY');
-        const eventTime = eventDateObject.format('hh A');
+        const eventTime = eventDateObject.format('h A');
         // const eventTime = eventDateObject.format('hh:mm A');
 
 
@@ -286,7 +286,7 @@ function getRandomPhoneNumber(){
 
 
 // mocks
-for (let i = 0; i < 60; i++){
+for (let i = 0; i < 15; i++){
     time_day_diff_list.push(i);
 }
 

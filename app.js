@@ -53,6 +53,7 @@ var bot = new builder.UniversalBot(connector, [
 
 
         session.dialogData.my_events = await dao.Event.findAll({
+            order: 'event_date ASC',
             where: {
                 user_id: session.dialogData.current_user.id
             }
@@ -64,7 +65,7 @@ var bot = new builder.UniversalBot(connector, [
 
         builder.Prompts.choice(session, "Select one of the following event?", session.dialogData.my_events.map((cur_event, cur_idx) => {
             return [
-                    `${cur_event.title} (${cur_event.event_date} ${cur_event.event_time})`,
+                    `${cur_event.event_date} ${cur_event.event_time} - ${cur_event.title} in ${cur_event.location}`,
                 ].join('\n');
         }));
     },
