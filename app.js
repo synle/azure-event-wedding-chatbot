@@ -1,5 +1,4 @@
 var restify = require('restify');
-var builder = require('botbuilder');
 var fs = require('fs')
 var dao = require('./dao');
 
@@ -11,38 +10,74 @@ server.listen(PORT, function () {
    console.log('%s listening to %s', server.name, server.url);
 });
 
-server.get('/', function(req, res){
-    res.send('OK');
-})
+
+server.use(restify.plugins.bodyParser());
 
 
-server.get('/index', function(req, res){
-    var body = fs.readFileSync('./view/index.html');
+var bodyIndex = fs.readFileSync('./view/index.html','utf-8');
+var bodyChatbot = fs.readFileSync('./view/chatbot.html', 'utf-8').replace('{BOT_SECRET}', process.env.BOT_SECRET || 'BOT_SECRET');
+
+var _showLogin = function(req, res){
     res.writeHead(200, {
-      'Content-Length': Buffer.byteLength(body),
+      'Content-Length': Buffer.byteLength(bodyIndex),
       'Content-Type': 'text/html'
     });
-    res.write(body);
+    res.write(bodyIndex);
     res.end();
+}
+
+
+server.get('/', _showLogin)
+server.get('/login', _showLogin)
+
+
+// do the auth here...
+server.post('/login', async function(req, res){
+    var {username, password} = req.body;
+
+    try{
+        const foundUser = await dao.User.findOne({
+            where: {
+                username,
+                password,
+            }
+        })
+
+        res.send('ok...' + username)
+    } catch(e){
+        res.send('failed...' + username)
+    }
 })
 
 
-server.get('/chatbot', function(req, res){
-    var body = fs.readFileSync('./view/chatbot.html', 'utf-8');
-    console.log(body);
-    body = body.replace('{BOT_SECRET}', process.env.BOT_SECRET || 'BOT_SECRET')
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+// chat bot html...
+server.get('/chatbot', function(req, res){
     res.writeHead(200, {
-      'Content-Length': Buffer.byteLength(body),
+      'Content-Length': Buffer.byteLength(bodyChatbot),
       'Content-Type': 'text/html'
     });
-    res.write(body);
+    res.write(bodyChatbot);
     res.end();
 })
 
 
 
 // Create chat connector for communicating with the Bot Framework Service
+var builder = require('botbuilder');
 var connector = new builder.ChatConnector({
     appId: process.env.MICROSOFT_APP_ID,
     appPassword: process.env.MICROSOFT_APP_PASSWORD
