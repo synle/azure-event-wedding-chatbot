@@ -17,6 +17,9 @@ var connector = new builder.ChatConnector({
 
 // Listen for messages from users
 server.post('/api/messages', connector.listen());
+server.get('/', function(req, res){
+    res.send('OK');
+})
 
 
 // This is a dinner reservation bot that uses multiple dialogs to prompt users for input.
