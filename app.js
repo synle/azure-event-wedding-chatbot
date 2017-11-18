@@ -11,6 +11,11 @@ server.listen(PORT, function () {
    console.log('%s listening to %s', server.name, server.url);
 });
 
+server.get('/', function(req, res){
+    res.send('OK');
+})
+
+
 // Create chat connector for communicating with the Bot Framework Service
 var connector = new builder.ChatConnector({
     appId: process.env.MICROSOFT_APP_ID,
@@ -19,9 +24,6 @@ var connector = new builder.ChatConnector({
 
 // Listen for messages from users
 server.post('/api/messages', connector.listen());
-server.get('/', function(req, res){
-    res.send('OK');
-})
 
 
 // This is a dinner reservation bot that uses multiple dialogs to prompt users for input.
