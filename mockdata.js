@@ -49,7 +49,26 @@ async function doWork(){
 
 
     // generate random events...
-    const data_events = [];
+    const data_events = [
+        {
+            title: 'Peter & Mary Wedding',
+            location: 'NestDown, Los Gatos, CA',
+            eventDate: '12/20/2017',
+            eventTime: '6PM',
+            description: 'Peter & Mary wedding in NestDown',
+            user_id: '1',
+            voice_invite_key: '4084084088',
+        },
+        {
+            title: 'Bob & Connie Wedding',
+            location: 'Saratoga Country winery, Saratoga, CA',
+            eventDate: '12/21/2017',
+            eventTime: '7PM',
+            description: 'Bob & Connie Wedding in Saratoga Country winery',
+            user_id: '1',
+            voice_invite_key: '4084084088',
+        }
+    ];
     const from_event_id = getRandomPosInteger(100000);
     for (let i = 0; i < NUM_MOCK_EVENTS; i++){
         const eventId = i + from_event_id;
@@ -83,6 +102,15 @@ async function doWork(){
             voice_invite_key: getRandomPhoneNumber(),
         }
 
+        data_events.push(event_to_insert);
+    }
+
+
+
+    data_events.forEach((current_event) =>{
+        const eventId = current_event.eventId;
+        const title = current_event.title;
+
         // add attendee
         let attendee_count = getRandomPosInteger(20);
         const attendee_list = [];
@@ -112,9 +140,7 @@ async function doWork(){
             });
         }
         __photo_list = __photo_list.concat(photo_list);
-
-        data_events.push(event_to_insert);
-    }
+    })
 
     //
     // console.log(data_events)
@@ -160,6 +186,7 @@ async function doWork(){
 
     data_people.forEach((item) => {
         dao.User.create({
+            id: item.userId,
             username: item.username || item.guestName.replace(' ', '.').toLowerCase() + '.' + item.userId,
             password: 'password',
             firstname: item.firstName,

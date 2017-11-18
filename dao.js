@@ -91,7 +91,8 @@ var Invitee = sequelizeAdapter.define(
 var User = sequelizeAdapter.define(
     'User',
     {
-        username: { type: Sequelize.DataTypes.STRING, primaryKey: true  },
+        id: { type: Sequelize.DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
+        username: { type: Sequelize.DataTypes.STRING  },
         password: { type: Sequelize.DataTypes.STRING },
         firstname: { type: Sequelize.DataTypes.STRING },
         lastname: { type: Sequelize.DataTypes.STRING },

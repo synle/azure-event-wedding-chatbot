@@ -1,6 +1,7 @@
 
 var restify = require('restify');
 var builder = require('botbuilder');
+var dao = require('./dao');
 
 // Setup Restify Server
 var server = restify.createServer();
@@ -38,20 +39,40 @@ var all_events = [
 
 // This is a dinner reservation bot that uses multiple dialogs to prompt users for input.
 var bot = new builder.UniversalBot(connector, [
-    function (session) {
+    async function (session) {
+        var username = 'sl';
+
+
+        session.dialogData.current_user = await dao.User.findOne({
+            where: {
+                username: username
+            }
+        });
+
+        // console.log(session.dialogData.current_user);
+
+
+        session.dialogData.my_events = await dao.Event.findAll({
+            where: {
+                user_id: session.dialogData.current_user.id
+            }
+        });
+
+        console.log(session.dialogData.my_events);
+
         session.send("Welcome to Wedding Event Booking Service.");
-        session.dialogData.my_events = all_events;
+
         builder.Prompts.choice(session, "Select one of the following event?", session.dialogData.my_events.map((cur_event, cur_idx) => {
             return [
                     `${cur_event.title}`,
                 ].join('\n');
         }));
     },
-    function (session, results) {
+    async function (session, results) {
         session.dialogData.selected_event = session.dialogData.my_events[results.response.index];
         builder.Prompts.choice(session, "What do you want to know about the events?", ["Details / Information", "Comments"]);
     },
-    function (session, results) {
+    async function (session, results) {
         session.dialogData.domain = results.response.index === 0 ? "information" : "comment";
         console.log(session.dialogData.domain)
 
@@ -61,7 +82,7 @@ var bot = new builder.UniversalBot(connector, [
                 session.send(`Here is the information about this event`);
                 session.send([
                     `${cur_event.title}`,
-                    `- Date: ${cur_event.eventDate} ${cur_event.eventTime}`,
+                    `- Date: ${cur_event.event_date} ${cur_event.event_time}`,
                     `- Location: ${cur_event.location}`,
                 ].join('\n'));
                 break;
