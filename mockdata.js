@@ -49,6 +49,7 @@ async function doWork(){
     // generate random events...
     const data_events = [
         {
+            eventId: 1,
             title: 'Peter & Mary Wedding',
             location: 'NestDown, Los Gatos, CA',
             eventDate: '12/20/2017',
@@ -58,6 +59,7 @@ async function doWork(){
             voice_invite_key: '4084084088',
         },
         {
+            eventId: 2,
             title: 'Bob & Connie Wedding',
             location: 'Saratoga Country winery, Saratoga, CA',
             eventDate: '12/21/2017',
