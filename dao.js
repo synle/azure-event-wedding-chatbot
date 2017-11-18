@@ -3,35 +3,34 @@ const _ = require('lodash');
 const Table = require('sequelize-simple-adapter');
 
 
-// const sequelizeAdapter = new Sequelize(
-//   process.env.MAIN_DB_NAME,
-//   process.env.MAIN_DB_USER,
-//   process.env.MAIN_DB_PASSWORD,
-//   {
-//     host: process.env.MAIN_DB_HOST,
-//     dialect: 'mssql',
-//     logging: false,
-//     pool: {
-//       max: 5,
-//       min: 0,
-//     },
-//     dialectOptions: {
-//       encrypt: true
-//     },
-//   }
-// );
-
-
-const sequelizeAdapter = new Sequelize(
-    'db_user', // 'database',
-    '', // 'username',
-    '', // 'password',
-    {
-        dialect: 'sqlite',
-        storage: './db.sqlite3',
-        logging: false
-    }
-);
+const sequelizeAdapter = !!process.env.MAIN_DB_HOST
+    ? new Sequelize(
+      process.env.MAIN_DB_NAME,
+      process.env.MAIN_DB_USER,
+      process.env.MAIN_DB_PASSWORD,
+      {
+        host: process.env.MAIN_DB_HOST,
+        dialect: 'mssql',
+        logging: false,
+        pool: {
+          max: 5,
+          min: 0,
+        },
+        dialectOptions: {
+          encrypt: true
+        },
+      }
+    )
+    : new Sequelize(
+        'db_user', // 'database',
+        '', // 'username',
+        '', // 'password',
+        {
+            dialect: 'sqlite',
+            storage: './db.sqlite3',
+            logging: false
+        }
+    );
 
 var Event = sequelizeAdapter.define(
     'Event',
