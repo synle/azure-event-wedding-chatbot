@@ -17,6 +17,7 @@
     "lodash": "^4.17.4",
     "moment": "^2.19.2",
     "restify": "^6.3.2",
-    "sequelize-simple-adapter": "github:synle/sequelize-simple-adapter"
+    "sequelize-simple-adapter": "github:synle/sequelize-simple-adapter",
+    "sqlite3": "^3.1.13"
   }
 }
