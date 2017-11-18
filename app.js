@@ -43,6 +43,10 @@ server.post('/login', async function(req, res){
             }
         })
 
+        if(!foundUser){
+            throw 'not found...'
+        }
+
         res.send('ok...' + username)
     } catch(e){
         res.send('failed...' + username)
