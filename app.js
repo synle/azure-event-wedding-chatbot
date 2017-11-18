@@ -40,58 +40,36 @@ var all_events = [
 var bot = new builder.UniversalBot(connector, [
     function (session) {
         session.send("Welcome to Wedding Event Booking Service.");
-        session.beginDialog('askForDomain');
+        session.dialogData.my_events = all_events;
+        builder.Prompts.choice(session, "Select one of the following event?", session.dialogData.my_events.map((cur_event, cur_idx) => {
+            return [
+                    `${cur_event.title}`,
+                ].join('\n');
+        }));
     },
     function (session, results) {
-        session.dialogData.domain = results.response;
+        session.dialogData.selected_event = session.dialogData.my_events[results.response.index];
+        builder.Prompts.choice(session, "What do you want to know about the events?", ["Details / Information", "Comments"]);
+    },
+    function (session, results) {
+        session.dialogData.domain = results.response.index === 0 ? "information" : "comment";
         console.log(session.dialogData.domain)
 
         switch(session.dialogData.domain){
-            case 'events':
-                session.send('Below is the list of latest Events')
-                var my_events = all_events;
-                all_events.forEach(
-                    function(cur_event, cur_idx){
-                        session.send([
-                            `Event #${cur_idx}`,
-                            `- Title: ${cur_event.title}`,
-                            `- Date: ${cur_event.eventDate} ${cur_event.eventTime}`,
-                            `- Location: ${cur_event.location}`,
-                            // `Description: ${cur_event.description}`,
-                        ].join('\n'));
-                    }
-                )
+            case 'information':
+                var cur_event = session.dialogData.selected_event;
+                session.send(`Here is the information about this event`);
+                session.send([
+                    `${cur_event.title}`,
+                    `- Date: ${cur_event.eventDate} ${cur_event.eventTime}`,
+                    `- Location: ${cur_event.location}`,
+                ].join('\n'));
                 break;
-            case 'comments':
+            case 'comment':
                 session.send('Below is the list of latest Comments')
                 break;
         }
     },
-]);
-
-
-
-bot.dialog('askForDomain', [
-    function (session) {
-        builder.Prompts.choice(session, "How can I help?", ["Wedding Event", "Comment"]);
-    },
-    function (session, results) {
-        var domain = '';
-
-        switch(results.response.index){
-            case 0:
-                domain = 'events';
-                break;
-            case 1:
-                domain = 'comments';
-                break;
-        }
-
-
-        session.endDialogWithResult({
-            response: domain
-        });
-    }
 ]);
 
 
