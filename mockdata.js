@@ -85,7 +85,7 @@ async function doWork(){
             .add(numDayInFuture, 'day')
             .add(numHourInFuture, 'hour');
         const eventDate = eventDateObject.format('MM/DD/YYYY');
-        const eventTime = eventDateObject.format('h A');
+        const eventTime = eventDateObject.format('hA');
         // const eventTime = eventDateObject.format('hh:mm A');
 
 
@@ -119,7 +119,7 @@ async function doWork(){
             .add(numDayInFuture, 'day')
             .add(numHourInFuture, 'hour');
         const eventDate = eventDateObject.format('MM/DD/YYYY');
-        const eventTime = eventDateObject.format('h A');
+        const eventTime = eventDateObject.format('hA');
         // const eventTime = eventDateObject.format('hh:mm A');
 
 
@@ -298,12 +298,15 @@ async function doWork(){
         //   eventTime: '09:00 AM',
         //   description: 'Jaxon & Aiden Wedding in Santa Fe Springs, Los Angeles, CA' }
     });
-    try{
-        console.log('Invitee', db_records.length)
-        await dao.Invitee.bulkCreate(db_records);
-    } catch(e){
-        console.log('dao.Invitee.bulkCreate(db_records);')
-    }
+
+    console.log('Event', db_records.length)
+    db_records.forEach(function(event){
+        try{
+            dao.Event.create(event)
+        } catch(e){
+            console.log('dao.Event.bulkCreate(db_records);', event.title)
+        }
+    });
 }
 
 // funcs
