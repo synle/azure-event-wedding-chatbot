@@ -19,7 +19,16 @@ async function doWork(){
     let __photo_list = [];
 
     // mocking events...
-    const data_people = [];
+    const data_people = [{
+        userId:1,
+        username: 'sl',
+        emailId:'sl@sl.com',
+        phoneNumber:'4084084088',
+        guestName:'Sy Le',
+        firstName:'sy',
+        lastName:'le',
+    }];
+    var from_user_id = getRandomPosInteger(10000);
     for (let i = 0; i < NUM_MOCK_INVITEES; i++){
         const phoneNumber = getRandomPhoneNumber();
         const firstName = getRandomItem(name_list);
@@ -29,6 +38,7 @@ async function doWork(){
         const guestName = firstName + ' ' + lastName;
 
         data_people.push({
+            userId: i + from_user_id,
             emailId,
             phoneNumber,
             guestName,
@@ -40,7 +50,7 @@ async function doWork(){
 
     // generate random events...
     const data_events = [];
-    const from_event_id = getRandomPosInteger(10000000);
+    const from_event_id = getRandomPosInteger(100000);
     for (let i = 0; i < NUM_MOCK_EVENTS; i++){
         const eventId = i + from_event_id;
         const spouse_1 = getRandomItem(data_people);
@@ -59,6 +69,9 @@ async function doWork(){
         const eventDate = eventDateObject.format('MM/DD/YYYY');
         const eventTime = eventDateObject.format('hh:mm A');
 
+
+        var eventOwner = getRandomItem(data_people);
+
         const event_to_insert = {
             eventId,
             title,
@@ -66,7 +79,7 @@ async function doWork(){
             eventDate,
             eventTime,
             description,
-            user_id: 1,
+            user_id: eventOwner.userId || 1,
             voice_invite_key: getRandomPhoneNumber(),
         }
 
@@ -147,7 +160,7 @@ async function doWork(){
 
     data_people.forEach((item) => {
         dao.User.create({
-            username: item.guestName.replace(' ', '.').toLowerCase(),
+            username: item.username || item.guestName.replace(' ', '.').toLowerCase() + '.' + item.userId,
             password: 'password',
             firstname: item.firstName,
             lastname: item.lastName,
