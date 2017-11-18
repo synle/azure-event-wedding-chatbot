@@ -9,7 +9,8 @@ let name_list,
     email_domain_list,
     time_day_diff_list = [],
     time_hour_diff_list = [],
-    wedding_photo_url_list = []
+    wedding_photo_url_list = [],
+    user_list = []
 
 async function doWork(){
     await dao.init();
@@ -39,7 +40,7 @@ async function doWork(){
 
     // generate random events...
     const data_events = [];
-    const from_event_id = 1000;
+    const from_event_id = getRandomPosInteger(10000000);
     for (let i = 0; i < NUM_MOCK_EVENTS; i++){
         const eventId = i + from_event_id;
         const spouse_1 = getRandomItem(data_people);
@@ -59,12 +60,14 @@ async function doWork(){
         const eventTime = eventDateObject.format('hh:mm A');
 
         const event_to_insert = {
-            id: eventId,
+            eventId,
             title,
             location,
             eventDate,
             eventTime,
             description,
+            user_id: 1,
+            voice_invite_key: getRandomPhoneNumber(),
         }
 
         // add attendee
@@ -74,7 +77,7 @@ async function doWork(){
             attendee_count--;
             const current_invitee = getRandomItem(data_people);
             attendee_list.push({
-                eventId: current_invitee.eventId,
+                eventId: eventId,
                 emailId: current_invitee.emailId,
                 phoneNumber: current_invitee.phoneNumber,
                 guestName: current_invitee.guestName,
@@ -91,8 +94,7 @@ async function doWork(){
             const current_photo = getRandomItem(wedding_photo_url_list);
             photo_list.push({
                 eventId,
-                s3Url: current_photo,
-                s3ThumbNailUrl: current_photo,
+                photoUrl: current_photo,
             });
         }
         __photo_list = __attendee_list.concat(photo_list);
@@ -100,7 +102,66 @@ async function doWork(){
         data_events.push(event_to_insert);
     }
 
-    console.log(data_events)
+    // console.log(data_events)
+    //
+
+    //
+    // insert into db
+    __attendee_list.forEach((item) => {
+        dao.Invitee.create({
+            // id: item.id,
+            event_id: item.eventId,
+            email_id: item.emailId,
+            phone_number: item.phoneNumber,
+            guest_name: item.guestName,
+        })
+
+        // console.log(item)
+        // { eventId: 1009,
+        // emailId: 'maya.hunter@yahoo.com',
+        // phoneNumber: '4876731745',
+        // guestName: 'Maya Hunter' }
+    });
+
+    // __photo_list.forEach((item) => {
+    //     console.log(item)
+    //     { eventId: 1009,
+    //     photoUrl: 'http://heavensentweddings.com/File/Image/m/200/300/33c08cbe-e858-43b0-8eb1-24454c68c017' }
+    // });
+
+
+    // data_people.forEach((item) => {
+
+    //     // console.log(item)
+    //     // { emailId: 'grace.adam@gmail.com',
+    //     //   phoneNumber: '4160826218',
+    //     //   guestName: 'Grace Adam',
+    //     //   firstName: 'Grace',
+    //     //   lastName: 'Adam' }
+    // });
+
+
+    data_events.forEach((item) => {
+        dao.Event.create({
+            event_id: item.eventId,
+            title: item.title,
+            location: item.location,
+            event_date: item.eventDate,
+            event_time: item.eventTime,
+            description: item.description,
+            user_id: item.user_id,
+            voice_invite_key: item.voice_invite_key,
+        })
+
+        // console.log(item)
+
+        // { eventId: 1009,
+        //   title: 'Jaxon & Aiden Wedding',
+        //   location: 'Santa Fe Springs, Los Angeles, CA',
+        //   eventDate: '01/09/2018',
+        //   eventTime: '09:00 AM',
+        //   description: 'Jaxon & Aiden Wedding in Santa Fe Springs, Los Angeles, CA' }
+    });
 }
 
 // funcs
