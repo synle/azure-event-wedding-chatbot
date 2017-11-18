@@ -2,6 +2,9 @@ const fs = require('fs')
 const path = require('path')
 const express = require('express')
 const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
+const cookieSession = require('cookie-session')
+
 
 
 const dao = require('./dao');
@@ -19,15 +22,30 @@ server.listen(PORT, () => console.log('Example app listening on port!', PORT))
 
 
 // middlewares
+server.engine('html', require('ejs').renderFile);
 server.use(bodyParser.urlencoded({ extended: false }))// parse application/x-www-form-urlencoded
 server.use(bodyParser.json())// parse application/json
+server.use(cookieParser('S3CRE7'));
+server.use(cookieSession({
+    name: 'session',
+    keys: ['S3CRE7'],
+
+    // Cookie Options
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+
+}));
+
 //
 
 
 var _showLogin = function(req, res){
-    res.sendFile(
-        path.join( __dirname+'/view/index.html' )
-    )
+    if(req.session.username){
+        res.redirect('/chatbot')
+    } else{
+        res.sendFile(
+            path.join( __dirname+'/view/index.html' )
+        )
+    }
 }
 
 
@@ -35,11 +53,25 @@ server.get('/', _showLogin)
 server.get('/login', _showLogin)
 
 
+server.get('/logout', function(req, res){
+    req.session.username = null
+    res.redirect('/')
+})
+
+
 // chat bot html...
 server.get('/chatbot', function(req, res){
-    res.sendFile(
-        path.join( __dirname+'/view/chatbot.html' )
-    )
+    if(req.session.username){
+        res.render(
+            path.join( __dirname + '/view/chatbot.html' ),
+            {
+                username: req.session.username,
+                BOT_SECRET: process.env.BOT_SECRET || 'BOT_SECRET'
+            }
+        )
+    } else {
+        res.redirect('/')
+    }
 })
 
 
@@ -59,19 +91,15 @@ server.post('/login', async function(req, res){
             throw 'not found...'
         }
 
-        res.send('ok...' + username);
+
+        req.session.username = username;
+
+        res.redirect('/chatbot')
     } catch(e){
         console.log(e);
-        res.send('failed...' + username)
+        res.redirect('/')
     }
 })
-
-
-
-
-
-
-
 
 
 
