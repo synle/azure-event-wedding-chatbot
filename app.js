@@ -58,13 +58,13 @@ var bot = new builder.UniversalBot(connector, [
             }
         });
 
-        console.log(session.dialogData.my_events);
+        // console.log(session.dialogData.my_events);
 
         session.send("Welcome to Wedding Event Booking Service.");
 
         builder.Prompts.choice(session, "Select one of the following event?", session.dialogData.my_events.map((cur_event, cur_idx) => {
             return [
-                    `${cur_event.title}`,
+                    `${cur_event.title} (${cur_event.event_date} ${cur_event.event_time})`,
                 ].join('\n');
         }));
     },

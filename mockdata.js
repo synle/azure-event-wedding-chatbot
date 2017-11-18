@@ -70,6 +70,41 @@ async function doWork(){
         }
     ];
     const from_event_id = getRandomPosInteger(100000);
+
+    for (let i = 0; i < 3; i++){
+        const eventId = getRandomPosInteger(500);
+        const spouse_1 = getRandomItem(data_people);
+        const spouse_2 = getRandomItem(data_people);
+        const location = getRandomItem(city_list);
+
+        const title = `${spouse_1.firstName} & ${spouse_2.firstName} Wedding`;
+        const description = title + ' in ' + location;
+
+        const numDayInFuture = getRandomItem(time_day_diff_list);
+        const numHourInFuture = getRandomItem(time_hour_diff_list);
+        const eventDateObject = moment()
+            .startOf('day')
+            .add(numDayInFuture, 'day')
+            .add(numHourInFuture, 'hour');
+        const eventDate = eventDateObject.format('MM/DD/YYYY');
+        const eventTime = eventDateObject.format('hh A');
+        // const eventTime = eventDateObject.format('hh:mm A');
+
+
+        const event_to_insert = {
+            eventId,
+            title,
+            location,
+            eventDate,
+            eventTime,
+            description,
+            user_id: 1,
+            voice_invite_key: getRandomPhoneNumber(),
+        }
+
+        data_events.push(event_to_insert);
+    }
+
     for (let i = 0; i < NUM_MOCK_EVENTS; i++){
         const eventId = i + from_event_id;
         const spouse_1 = getRandomItem(data_people);
@@ -86,7 +121,8 @@ async function doWork(){
             .add(numDayInFuture, 'day')
             .add(numHourInFuture, 'hour');
         const eventDate = eventDateObject.format('MM/DD/YYYY');
-        const eventTime = eventDateObject.format('hh:mm A');
+        const eventTime = eventDateObject.format('hh A');
+        // const eventTime = eventDateObject.format('hh:mm A');
 
 
         var eventOwner = getRandomItem(data_people);
