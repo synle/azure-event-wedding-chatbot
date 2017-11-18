@@ -95,15 +95,21 @@ async function doWork(){
             photo_list.push({
                 eventId,
                 photoUrl: current_photo,
+                fileName: `${title}.jpg`,
             });
         }
-        __photo_list = __attendee_list.concat(photo_list);
+        __photo_list = __photo_list.concat(photo_list);
 
         data_events.push(event_to_insert);
     }
 
+    //
     // console.log(data_events)
     //
+
+
+
+
 
     //
     // insert into db
@@ -123,22 +129,38 @@ async function doWork(){
         // guestName: 'Maya Hunter' }
     });
 
-    // __photo_list.forEach((item) => {
-    //     console.log(item)
-    //     { eventId: 1009,
-    //     photoUrl: 'http://heavensentweddings.com/File/Image/m/200/300/33c08cbe-e858-43b0-8eb1-24454c68c017' }
-    // });
+    __photo_list.forEach((item) => {
+        dao.EventPhoto.create({
+            // id: item.id,
+            event_id: item.eventId,
+            s3url: item.photoUrl,
+            s3thumb_nail_url: item.photoUrl,
+            file_name: item.fileName,
+        })
+
+        // console.log(item)
+        // { eventId: 1009,
+        // photoUrl: 'http://heavensentweddings.com/File/Image/m/200/300/33c08cbe-e858-43b0-8eb1-24454c68c017' }
+        // fileName: ''}
+    });
 
 
-    // data_people.forEach((item) => {
+    data_people.forEach((item) => {
+        dao.User.create({
+            username: item.guestName.replace(' ', '.').toLowerCase(),
+            password: 'password',
+            firstname: item.firstName,
+            lastname: item.lastName,
+            active: true,
+        })
 
-    //     // console.log(item)
-    //     // { emailId: 'grace.adam@gmail.com',
-    //     //   phoneNumber: '4160826218',
-    //     //   guestName: 'Grace Adam',
-    //     //   firstName: 'Grace',
-    //     //   lastName: 'Adam' }
-    // });
+        // console.log(item)
+        // { emailId: 'grace.adam@gmail.com',
+        //   phoneNumber: '4160826218',
+        //   guestName: 'Grace Adam',
+        //   firstName: 'Grace',
+        //   lastName: 'Adam' }
+    });
 
 
     data_events.forEach((item) => {
