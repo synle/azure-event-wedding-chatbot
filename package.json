@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node app.js",
-    "test": "echo \"Error: no test specified\""
+    "test": "echo \"Error: no test specified\"",
+    "test2": "node nukedata.js; node mockdata.js"
   },
   "author": "Sy Le",
   "license": "ISC",
