@@ -19,24 +19,6 @@ var connector = new builder.ChatConnector({
 server.post('/api/messages', connector.listen());
 
 
-
-var all_events = [
-    {
-        title: 'Peter & Mary Wedding',
-        location: 'NestDown, Los Gatos, CA',
-        eventDate: '11/20/2017',
-        eventTime: '6PM',
-        description: 'Peter & Mary wedding in NestDown',
-    },
-    {
-        title: 'Bob & Connie Wedding',
-        location: 'Saratoga Country winery, Saratoga, CA',
-        eventDate: '11/21/2017',
-        eventTime: '7PM',
-        description: 'Bob & Connie Wedding in Saratoga Country winery',
-    }
-]
-
 // This is a dinner reservation bot that uses multiple dialogs to prompt users for input.
 var bot = new builder.UniversalBot(connector, [
     async function (session) {
@@ -63,35 +45,58 @@ var bot = new builder.UniversalBot(connector, [
 
         session.send("Welcome to Wedding Event Booking Service.");
 
-        builder.Prompts.choice(session, "Select one of the following event?", session.dialogData.my_events.map((cur_event, cur_idx) => {
+        builder.Prompts.choice(session, "Select one of the following events?", session.dialogData.my_events.map((cur_event, cur_idx) => {
             return [
                     `${cur_event.event_date} ${cur_event.event_time} - ${cur_event.title} in ${cur_event.location}`,
                 ].join('\n');
         }));
     },
     async function (session, results) {
-        session.dialogData.selected_event = session.dialogData.my_events[results.response.index];
-        builder.Prompts.choice(session, "What do you want to know about the events?", ["Details / Information", "Comments"]);
-    },
-    async function (session, results) {
-        session.dialogData.domain = results.response.index === 0 ? "information" : "comment";
-        console.log(session.dialogData.domain)
+        var cur_event = session.dialogData.my_events[results.response.index];;
+        session.dialogData.selected_event = cur_event;
 
-        switch(session.dialogData.domain){
-            case 'information':
-                var cur_event = session.dialogData.selected_event;
-                session.send(`Here is the information about this event`);
-                session.send([
-                    `${cur_event.title}`,
-                    `- Date: ${cur_event.event_date} ${cur_event.event_time}`,
-                    `- Location: ${cur_event.location}`,
-                ].join('\n'));
-                break;
-            case 'comment':
-                session.send('Below is the list of latest Comments')
-                break;
-        }
+        session.send("Gathering information regarding this event.");
+
+        session.dialogData.selected_event_photos = await dao.EventPhoto.findAll({
+            where: {
+                event_id: session.dialogData.selected_event.event_id
+            }
+        });
+
+        // console.log(session.dialogData.selected_event_photos);
+        // console.log('session.dialogData.selected_event_photos', session.dialogData.selected_event_photos[0]);
+
+        session.send([
+            `Here is the information about this event`,
+            `${cur_event.title}`,
+            `- Date: ${cur_event.event_date} ${cur_event.event_time}`,
+            `- Location: ${cur_event.location}`,
+        ].join('\n'));
+
+        var msg = new builder.Message(session)
+            .attachments([{
+                contentType: "image/jpeg",
+                contentUrl: session.dialogData.selected_event_photos[0].s3url
+            }]);
+        session.send(msg);
+
+
+        session.dialogData.selected_event_invitees = await dao.Invitee.findAll({
+            where: {
+                event_id: session.dialogData.selected_event.event_id
+            }
+        });
+
+
+        // builder.Prompts.confirm(session, "Do you want to look at the latest comments?");
     },
+    // async function (session, results) {
+    //     if(results.response){
+    //         // show the comments...
+    //     } else {
+    //         session.endDialog('I hope you are happy with my service');
+    //     }
+    // },
 ]);
 
 
