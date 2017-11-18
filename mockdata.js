@@ -1,5 +1,7 @@
-const dao = require('./dao')
 const moment = require('moment');
+
+const dao = require('./dao')
+const util = require('./util')
 
 const NUM_MOCK_EVENTS = 10;
 const NUM_MOCK_INVITEES = 100;
@@ -26,12 +28,12 @@ async function doWork(){
         firstName:'sy',
         lastName:'le',
     }];
-    var from_user_id = getRandomPosInteger(10000);
+    var from_user_id = util.getRandomPosInteger(10000);
     for (let i = 0; i < NUM_MOCK_INVITEES; i++){
-        const phoneNumber = getRandomPhoneNumber();
-        const firstName = getRandomItem(name_list);
-        const lastName = getRandomItem(name_list);
-        const emailDomain = getRandomItem(email_domain_list);
+        const phoneNumber = util.getRandomPhoneNumber();
+        const firstName = util.getRandomItem(name_list);
+        const lastName = util.getRandomItem(name_list);
+        const emailDomain = util.getRandomItem(email_domain_list);
         const emailId = (firstName + '.' + lastName + emailDomain).toLowerCase();
         const guestName = firstName + ' ' + lastName;
 
@@ -47,10 +49,10 @@ async function doWork(){
 
 
     // generate random events...
-    const from_event_id = getRandomPosInteger(100000);
+    const from_event_id = util.getRandomPosInteger(100000);
     const data_events = [];
-    for (let i = 0; i < getRandomFromRange(4, 8); i++){
-        const eventId = getRandomPosInteger(500);
+    for (let i = 0; i < util.getRandomFromRange(4, 8); i++){
+        const eventId = util.getRandomPosInteger(500);
 
         const event_to_insert = {
             eventId,
@@ -62,7 +64,7 @@ async function doWork(){
 
     for (let i = 0; i < NUM_MOCK_EVENTS; i++){
         const eventId = i + from_event_id;
-        const eventOwner = getRandomItem(data_people);
+        const eventOwner = util.getRandomItem(data_people);
 
         const event_to_insert = {
             eventId,
@@ -77,15 +79,15 @@ async function doWork(){
     data_events.forEach((current_event, idx) =>{
         // add event nfo...
         const eventId = current_event.eventId;
-        const spouse_1 = getRandomItem(data_people);
-        const spouse_2 = getRandomItem(data_people);
-        const location = getRandomItem(city_list);
+        const spouse_1 = util.getRandomItem(data_people);
+        const spouse_2 = util.getRandomItem(data_people);
+        const location = util.getRandomItem(city_list);
 
         const title = `${spouse_1.firstName} & ${spouse_2.firstName} Wedding`;
         const description = title + ' in ' + location;
 
-        const numDayInFuture = getRandomItem(time_day_diff_list);
-        const numHourInFuture = getRandomItem(time_hour_diff_list);
+        const numDayInFuture = util.getRandomItem(time_day_diff_list);
+        const numHourInFuture = util.getRandomItem(time_hour_diff_list);
         const eventDateObject = moment()
             .startOf('day')
             .add(numDayInFuture, 'day')
@@ -94,14 +96,14 @@ async function doWork(){
         const eventTime = eventDateObject.format('hA');
         // const eventTime = eventDateObject.format('hh:mm A');
 
-        const eventOwner = getRandomItem(data_people);
+        const eventOwner = util.getRandomItem(data_people);
 
         data_events[idx].title = title;
         data_events[idx].location = location;
         data_events[idx].eventDate = eventDate;
         data_events[idx].eventTime = eventTime;
         data_events[idx].description = description;
-        data_events[idx].voice_invite_key = getRandomPhoneNumber();
+        data_events[idx].voice_invite_key = util.getRandomPhoneNumber();
 
 
 
@@ -109,11 +111,11 @@ async function doWork(){
 
 
         // add attendee
-        let attendee_count = getRandomPosInteger(20);
+        let attendee_count = util.getRandomPosInteger(20);
         const attendee_list = [];
         while(attendee_count > 0){
             attendee_count--;
-            const current_invitee = getRandomItem(data_people);
+            const current_invitee = util.getRandomItem(data_people);
             attendee_list.push({
                 eventId: eventId,
                 emailId: current_invitee.emailId,
@@ -125,10 +127,10 @@ async function doWork(){
 
 
         // add photo
-        let photo_count = getRandomPosInteger(5);
+        let photo_count = util.getRandomPosInteger(5);
         const photo_list = [];
         while(photo_count > 0){
-            const current_photo = getRandomItem(wedding_photo_url_list);
+            const current_photo = util.getRandomItem(wedding_photo_url_list);
             photo_list.push({
                 eventId,
                 photoUrl: current_photo,
@@ -271,29 +273,6 @@ async function doWork(){
         }
     });
 }
-
-// funcs
-function getRandomItem(list) {
-    return list[Math.floor(Math.random() * (list.length -1))];
-}
-
-function getRandomPosInteger(max) {
-    return getRandomFromRange(1, max);
-}
-
-function getRandomFromRange(min, max) {
-    return Math.floor(Math.random() * (max - min) + min);
-}
-
-function getRandomPhoneNumber(){
-    var allowed_nums = '0123456789';
-    var resp = '';
-    for (var i = 0; i < 10; i++){
-        resp += getRandomItem(allowed_nums)
-    }
-    return resp;
-}
-
 
 // mocks
 for (let i = 0; i < 15; i++){

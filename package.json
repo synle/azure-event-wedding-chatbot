@@ -14,10 +14,11 @@
     "node": ">=7.6.0"
   },
   "dependencies": {
+    "body-parser": "^1.18.2",
     "botbuilder": "^3.11.0",
+    "express": "^4.16.2",
     "lodash": "^4.17.4",
     "moment": "^2.19.2",
-    "restify": "^6.3.2",
     "sequelize-simple-adapter": "git+https://github.com/synle/sequelize-simple-adapter.git",
     "sqlite3": "^3.1.13"
   }
