@@ -1,29 +1,33 @@
-var restify = require('restify');
-var fs = require('fs')
-var dao = require('./dao');
-
-// Setup Restify Server
-var PORT = process.env.port || 8080;
-console.log('Starting Server on PORT', PORT);
-var server = restify.createServer();
-server.listen(PORT, function () {
-   console.log('%s listening to %s', server.name, server.url);
-});
+const fs = require('fs')
+const path = require('path')
+const express = require('express')
+const bodyParser = require('body-parser')
 
 
-server.use(restify.plugins.bodyParser());
+const dao = require('./dao');
+const util = require('./util')
 
 
-var bodyIndex = fs.readFileSync('./view/index.html','utf-8');
-var bodyChatbot = fs.readFileSync('./view/chatbot.html', 'utf-8').replace('{BOT_SECRET}', process.env.BOT_SECRET || 'BOT_SECRET');
+const server = express()
+
+
+
+// server.get('/', (req, res) => res.send('Hello World!'))
+const PORT = process.env.port || 8080;
+server.listen(PORT, () => console.log('Example app listening on port!', PORT))
+
+
+
+// middlewares
+server.use(bodyParser.urlencoded({ extended: false }))// parse application/x-www-form-urlencoded
+server.use(bodyParser.json())// parse application/json
+//
+
 
 var _showLogin = function(req, res){
-    res.writeHead(200, {
-      'Content-Length': Buffer.byteLength(bodyIndex),
-      'Content-Type': 'text/html'
-    });
-    res.write(bodyIndex);
-    res.end();
+    res.sendFile(
+        path.join( __dirname+'/view/index.html' )
+    )
 }
 
 
@@ -31,7 +35,15 @@ server.get('/', _showLogin)
 server.get('/login', _showLogin)
 
 
-// do the auth here...
+// chat bot html...
+server.get('/chatbot', function(req, res){
+    res.sendFile(
+        path.join( __dirname+'/view/chatbot.html' )
+    )
+})
+
+
+// // do the auth here...
 server.post('/login', async function(req, res){
     var {username, password} = req.body;
 
@@ -47,8 +59,9 @@ server.post('/login', async function(req, res){
             throw 'not found...'
         }
 
-        res.send('ok...' + username)
+        res.send('ok...' + username);
     } catch(e){
+        console.log(e);
         res.send('failed...' + username)
     }
 })
@@ -68,21 +81,11 @@ server.post('/login', async function(req, res){
 
 
 
-// chat bot html...
-server.get('/chatbot', function(req, res){
-    res.writeHead(200, {
-      'Content-Length': Buffer.byteLength(bodyChatbot),
-      'Content-Type': 'text/html'
-    });
-    res.write(bodyChatbot);
-    res.end();
-})
 
 
-
-// Create chat connector for communicating with the Bot Framework Service
-var builder = require('botbuilder');
-var connector = new builder.ChatConnector({
+// // Create chat connector for communicating with the Bot Framework Service
+const builder = require('botbuilder');
+const connector = new builder.ChatConnector({
     appId: process.env.MICROSOFT_APP_ID,
     appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
@@ -170,15 +173,3 @@ var bot = new builder.UniversalBot(connector, [
     //     }
     // },
 ]);
-
-
-
-
-
-// var builder = require('botbuilder');
-
-// var connector = new builder.ConsoleConnector().listen();
-// var bot = new builder.UniversalBot(connector, function (session) {
-//     session.send("You said: %s", session.message.text);
-// });
-
