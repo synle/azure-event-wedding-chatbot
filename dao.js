@@ -108,7 +108,7 @@ var User = sequelizeAdapter.define(
 // might only need to run for init call...
 var promiseSequelizeInit = sequelizeAdapter.sync().then(
   function (argument) {
-    console.log('Database ORM Synced... Ready to use');
+    console.log('Database ORM Synced... Ready to use', process.env.MAIN_DB_HOST);
   }
 );
 
@@ -117,6 +117,7 @@ module.exports = {
     init: async () => {
         await promiseSequelizeInit;
     },
+    sequelizeAdapter,
     User: new Table(User, promiseSequelizeInit),
     Event: new Table(Event, promiseSequelizeInit),
     EventPhoto: new Table(EventPhoto, promiseSequelizeInit),
