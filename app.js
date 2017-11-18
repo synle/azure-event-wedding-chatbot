@@ -28,7 +28,10 @@ server.get('/index', function(req, res){
 
 
 server.get('/chatbot', function(req, res){
-    var body = fs.readFileSync('./view/chatbot.html');
+    var body = fs.readFileSync('./view/chatbot.html', 'utf-8');
+    console.log(body);
+    body = body.replace('{BOT_SECRET}', process.env.BOT_SECRET || 'BOT_SECRET')
+
     res.writeHead(200, {
       'Content-Length': Buffer.byteLength(body),
       'Content-Type': 'text/html'
