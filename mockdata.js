@@ -50,56 +50,22 @@ async function doWork(){
     const data_events = [
         {
             eventId: 1,
-            title: 'Peter & Mary Wedding',
-            location: 'NestDown, Los Gatos, CA',
-            eventDate: '12/20/2017',
-            eventTime: '6PM',
-            description: 'Peter & Mary wedding in NestDown',
-            user_id: '1',
-            voice_invite_key: '4084084088',
+            user_id: 1,
         },
         {
             eventId: 2,
-            title: 'Bob & Connie Wedding',
-            location: 'Saratoga Country winery, Saratoga, CA',
-            eventDate: '12/21/2017',
-            eventTime: '7PM',
-            description: 'Bob & Connie Wedding in Saratoga Country winery',
-            user_id: '1',
-            voice_invite_key: '4084084088',
+            user_id: 1,
         }
     ];
     const from_event_id = getRandomPosInteger(100000);
 
-    for (let i = 0; i < 3; i++){
+    for (let i = 0; i < 4; i++){
         const eventId = getRandomPosInteger(500);
-        const spouse_1 = getRandomItem(data_people);
-        const spouse_2 = getRandomItem(data_people);
-        const location = getRandomItem(city_list);
-
-        const title = `${spouse_1.firstName} & ${spouse_2.firstName} Wedding`;
-        const description = title + ' in ' + location;
-
-        const numDayInFuture = getRandomItem(time_day_diff_list);
-        const numHourInFuture = getRandomItem(time_hour_diff_list);
-        const eventDateObject = moment()
-            .startOf('day')
-            .add(numDayInFuture, 'day')
-            .add(numHourInFuture, 'hour');
-        const eventDate = eventDateObject.format('MM/DD/YYYY');
-        const eventTime = eventDateObject.format('hA');
-        // const eventTime = eventDateObject.format('hh:mm A');
-
+        const eventOwner = getRandomItem(data_people);
 
         const event_to_insert = {
             eventId,
-            title,
-            location,
-            eventDate,
-            eventTime,
-            description,
-            user_id: 1,
-            voice_invite_key: getRandomPhoneNumber(),
+            user_id: eventOwner.userId,
         }
 
         data_events.push(event_to_insert);
@@ -107,6 +73,21 @@ async function doWork(){
 
     for (let i = 0; i < NUM_MOCK_EVENTS; i++){
         const eventId = i + from_event_id;
+        const eventOwner = getRandomItem(data_people);
+
+        const event_to_insert = {
+            eventId,
+            user_id: eventOwner.userId,
+        }
+
+        data_events.push(event_to_insert);
+    }
+
+
+
+    data_events.forEach((current_event, idx) =>{
+        // add event nfo...
+        const eventId = current_event.eventId;
         const spouse_1 = getRandomItem(data_people);
         const spouse_2 = getRandomItem(data_people);
         const location = getRandomItem(city_list);
@@ -124,28 +105,19 @@ async function doWork(){
         const eventTime = eventDateObject.format('hA');
         // const eventTime = eventDateObject.format('hh:mm A');
 
+        const eventOwner = getRandomItem(data_people);
 
-        var eventOwner = getRandomItem(data_people);
-
-        const event_to_insert = {
-            eventId,
-            title,
-            location,
-            eventDate,
-            eventTime,
-            description,
-            user_id: eventOwner.userId || 1,
-            voice_invite_key: getRandomPhoneNumber(),
-        }
-
-        data_events.push(event_to_insert);
-    }
+        data_events[idx].title = title;
+        data_events[idx].location = location;
+        data_events[idx].eventDate = eventDate;
+        data_events[idx].eventTime = eventTime;
+        data_events[idx].description = description;
+        data_events[idx].voice_invite_key = getRandomPhoneNumber();
 
 
 
-    data_events.forEach((current_event) =>{
-        const eventId = current_event.eventId;
-        const title = current_event.title;
+
+
 
         // add attendee
         let attendee_count = getRandomPosInteger(20);
@@ -167,13 +139,13 @@ async function doWork(){
         let photo_count = getRandomPosInteger(5);
         const photo_list = [];
         while(photo_count > 0){
-            photo_count--;
             const current_photo = getRandomItem(wedding_photo_url_list);
             photo_list.push({
                 eventId,
                 photoUrl: current_photo,
-                fileName: `${title}.jpg`,
+                fileName: `${title}-${photo_count}.jpg`,
             });
+            photo_count--;
         }
         __photo_list = __photo_list.concat(photo_list);
     })
