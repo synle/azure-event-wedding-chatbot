@@ -125,22 +125,25 @@ server.post('/api/messages', connector.listen());
 // This is a dinner reservation bot that uses multiple dialogs to prompt users for input.
 var bot = new builder.UniversalBot(connector, [
     async function (session) {
-        var username = 'sl';
+        if(!session.userData.current_user){
+            var username = 'sl';
 
+            session.userData.current_user = await dao.User.findOne({
+                where: {
+                    username: username
+                }
+            });
+        } else {
+            console.log('user data from before...', session.userData);
+        }
 
-        session.dialogData.current_user = await dao.User.findOne({
-            where: {
-                username: username
-            }
-        });
-
-        // console.log(session.dialogData.current_user);
+        // console.log(session.userData.current_user);
 
 
         session.dialogData.my_events = await dao.Event.findAll({
             order: 'event_date ASC',
             where: {
-                user_id: session.dialogData.current_user.id
+                user_id: session.userData.current_user.id
             }
         });
 
