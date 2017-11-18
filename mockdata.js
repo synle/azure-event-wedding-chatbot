@@ -13,8 +13,6 @@ let name_list,
     user_list = []
 
 async function doWork(){
-    await dao.init();
-
     let __attendee_list = [];
     let __photo_list = [];
 
@@ -186,16 +184,20 @@ async function doWork(){
 
 
 
-    //
-    // insert into db
-    __attendee_list.forEach((item) => {
-        dao.Invitee.create({
+    // INSERT TO DATABASE
+    // // insert into db
+    await dao.init();
+
+
+    // let db_records;
+    db_records = __attendee_list.map((item) => {
+        return {
             // id: item.id,
             event_id: item.eventId,
             email_id: item.emailId,
             phone_number: item.phoneNumber,
             guest_name: item.guestName,
-        })
+        };
 
         // console.log(item)
         // { eventId: 1009,
@@ -203,32 +205,54 @@ async function doWork(){
         // phoneNumber: '4876731745',
         // guestName: 'Maya Hunter' }
     });
+    try{
+        console.log('Invitee', db_records.length)
+        await dao.Invitee.bulkCreate(db_records);
+    } catch(e){
+        console.log('dao.Invitee.bulkCreate(db_records);')
+    }
 
-    __photo_list.forEach((item) => {
-        dao.EventPhoto.create({
+
+
+
+    db_records = __photo_list.map((item) => {
+        return {
             // id: item.id,
             event_id: item.eventId,
             s3url: item.photoUrl,
             s3thumb_nail_url: item.photoUrl,
             file_name: item.fileName,
-        })
+        }
+
+        // dao.EventPhoto.create()
 
         // console.log(item)
         // { eventId: 1009,
         // photoUrl: 'http://heavensentweddings.com/File/Image/m/200/300/33c08cbe-e858-43b0-8eb1-24454c68c017' }
         // fileName: ''}
     });
+    try{
+        console.log('EventPhoto', db_records.length)
+        await dao.EventPhoto.bulkCreate(db_records);
+    } catch(e){
+        console.log('dao.EventPhoto.bulkCreate(db_records);')
+    }
 
 
-    data_people.forEach((item) => {
-        dao.User.create({
+
+
+
+
+
+    db_records = data_people.map((item) => {
+        return {
             id: item.userId,
             username: item.username || item.guestName.replace(' ', '.').toLowerCase() + '.' + item.userId,
             password: 'password',
             firstname: item.firstName,
             lastname: item.lastName,
             active: true,
-        })
+        };
 
         // console.log(item)
         // { emailId: 'grace.adam@gmail.com',
@@ -237,10 +261,22 @@ async function doWork(){
         //   firstName: 'Grace',
         //   lastName: 'Adam' }
     });
+    try{
+        console.log('User', db_records.length)
+        await dao.User.bulkCreate(db_records);
+    } catch(e){
+        console.log('dao.User.bulkCreate(db_records);')
+    }
 
 
-    data_events.forEach((item) => {
-        dao.Event.create({
+
+
+
+
+
+
+    db_records = data_events.map((item) => {
+        return {
             event_id: item.eventId,
             title: item.title,
             location: item.location,
@@ -249,7 +285,9 @@ async function doWork(){
             description: item.description,
             user_id: item.user_id,
             voice_invite_key: item.voice_invite_key,
-        })
+        };
+
+        // dao.Event.create()
 
         // console.log(item)
 
@@ -260,6 +298,12 @@ async function doWork(){
         //   eventTime: '09:00 AM',
         //   description: 'Jaxon & Aiden Wedding in Santa Fe Springs, Los Angeles, CA' }
     });
+    try{
+        console.log('Invitee', db_records.length)
+        await dao.Invitee.bulkCreate(db_records);
+    } catch(e){
+        console.log('dao.Invitee.bulkCreate(db_records);')
+    }
 }
 
 // funcs
