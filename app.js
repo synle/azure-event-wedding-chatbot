@@ -25,7 +25,7 @@ server.listen(PORT, () => console.log('Example app listening on port!', PORT))
 
 // the old bot approach...
 // middlewares
-// server.engine('html', require('ejs').renderFile);
+server.engine('html', require('ejs').renderFile);
 // server.use(bodyParser.urlencoded({ extended: false }))// parse application/x-www-form-urlencoded
 // server.use(bodyParser.json())// parse application/json
 // server.use(cookieParser('S3CRE7'));
@@ -112,7 +112,7 @@ server.get('/', function(req, res){
     res.render(
         path.join( __dirname + '/view/chatbot.html' ),
         {
-            username: req.session.username,
+            // username: req.session.username,
             BOT_URL: process.env.BOT_URL,
         }
     )
@@ -282,9 +282,13 @@ bot.dialog("showEventInformation", [
         console.log(results);
         if(results.response){
             session.send(
-                session.dialogData.selected_event_invitees.map((cur_event_attendee) => {
-                    return `- ${cur_event_attendee.guest_name} - ${cur_event_attendee.phone_number}`
-                })
+                [
+                    `Here is the attendee list of this event: (total=${session.dialogData.selected_event_invitees.length})`
+                ].concat(
+                    session.dialogData.selected_event_invitees.map((cur_event_attendee) => {
+                        return `- ${cur_event_attendee.guest_name} - ${cur_event_attendee.phone_number}`
+                    })
+                )
                 .join('\n')
             );
         }
