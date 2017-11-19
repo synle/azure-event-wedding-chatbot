@@ -22,93 +22,101 @@ server.listen(PORT, () => console.log('Example app listening on port!', PORT))
 
 
 
+
+// the old bot approach...
 // middlewares
-server.engine('html', require('ejs').renderFile);
-server.use(bodyParser.urlencoded({ extended: false }))// parse application/x-www-form-urlencoded
-server.use(bodyParser.json())// parse application/json
-server.use(cookieParser('S3CRE7'));
-server.use(cookieSession({
-    name: 'session',
-    keys: ['S3CRE7'],
+// server.engine('html', require('ejs').renderFile);
+// server.use(bodyParser.urlencoded({ extended: false }))// parse application/x-www-form-urlencoded
+// server.use(bodyParser.json())// parse application/json
+// server.use(cookieParser('S3CRE7'));
+// server.use(cookieSession({
+//     name: 'session',
+//     keys: ['S3CRE7'],
 
-    // Cookie Options
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+//     // Cookie Options
+//     maxAge: 24 * 60 * 60 * 1000 // 24 hours
 
-}));
+// }));
 
-//
-
-
-var _showLogin = function(req, res){
-    if(req.session.username){
-        res.redirect('/chatbot')
-    } else{
-        res.sendFile(
-            path.join( __dirname+'/view/index.html' )
-        )
-    }
-}
+// //
 
 
-server.get('/', _showLogin)
-server.get('/login', _showLogin)
+// var _showLogin = function(req, res){
+//     if(req.session.username){
+//         res.redirect('/chatbot')
+//     } else{
+//         res.sendFile(
+//             path.join( __dirname+'/view/index.html' )
+//         )
+//     }
+// }
 
 
-server.get('/logout', function(req, res){
-    req.session.username = null
-    res.redirect('/')
-})
+// server.get('/', _showLogin)
+// server.get('/login', _showLogin)
 
 
-// chat bot html...
-server.get('/chatbot', function(req, res){
-    if(req.session.username){
-        res.render(
-            path.join( __dirname + '/view/chatbot.html' ),
-            {
-                username: req.session.username,
-                BOT_URL: process.env.BOT_URL,
-            }
-        )
-    } else {
-        res.redirect('/')
-    }
-})
+// server.get('/logout', function(req, res){
+//     req.session.username = null
+//     res.redirect('/')
+// })
 
 
-// // do the auth here...
-server.post('/login', async function(req, res){
-    var {username, password} = req.body;
+// // chat bot html...
+// server.get('/chatbot', function(req, res){
+//     if(req.session.username){
+//         res.render(
+//             path.join( __dirname + '/view/chatbot.html' ),
+//             {
+//                 username: req.session.username,
+//                 BOT_URL: process.env.BOT_URL,
+//             }
+//         )
+//     } else {
+//         res.redirect('/')
+//     }
+// })
 
-    try{
-        const foundUser = await dao.User.findOne({
-            where: {
-                username,
-                password,
-            }
-        })
 
-        if(!foundUser){
-            throw 'not found...'
+// // // do the auth here...
+// server.post('/login', async function(req, res){
+//     var {username, password} = req.body;
+
+//     try{
+//         const foundUser = await dao.User.findOne({
+//             where: {
+//                 username,
+//                 password,
+//             }
+//         })
+
+//         if(!foundUser){
+//             throw 'not found...'
+//         }
+
+
+//         req.session.username = username;
+
+//         res.redirect('/chatbot')
+//     } catch(e){
+//         console.log(e);
+//         res.redirect('/')
+//     }
+// })
+
+
+
+
+//single entry for bots...
+server.get('/', function(req, res){
+    res.render(
+        path.join( __dirname + '/view/chatbot.html' ),
+        {
+            username: req.session.username,
+            BOT_URL: process.env.BOT_URL,
         }
-
-
-        req.session.username = username;
-
-        res.redirect('/chatbot')
-    } catch(e){
-        console.log(e);
-        res.redirect('/')
-    }
+    )
 })
-
-
-
-
-
-
-
-
 
 
 
@@ -238,6 +246,13 @@ bot.dialog("showEventInformation", [
             }
         });
 
+
+        session.dialogData.selected_event_invitees = await dao.Invitee.findAll({
+            where: {
+                event_id: session.dialogData.selected_event.event_id
+            }
+        });
+
         // console.log(session.dialogData.selected_event_photos);
         // console.log('session.dialogData.selected_event_photos', session.dialogData.selected_event_photos[0]);
         var cur_event = session.dialogData.selected_event;
@@ -246,7 +261,9 @@ bot.dialog("showEventInformation", [
             `- ${cur_event.title}`,
             `- Date: ${cur_event.event_date} ${cur_event.event_time}`,
             `- Location: ${cur_event.location}`,
+            `- Total Attendees: ${session.dialogData.selected_event_invitees.length}`
         ].join('\n'));
+
 
         var msg = new builder.Message(session)
             .attachments([{
@@ -259,25 +276,39 @@ bot.dialog("showEventInformation", [
         session.send(`Map for this event: https://www.google.com/maps/place/?q=${encodeURIComponent(cur_event.location)}`)
 
 
-        session.dialogData.selected_event_invitees = await dao.Invitee.findAll({
-            where: {
-                event_id: session.dialogData.selected_event.event_id
-            }
-        });
+        builder.Prompts.confirm(session, "Should we show the attendee information...?");
     },
     async function (session, results) {
         console.log(results);
-        if(resuls.response){
+        if(results.response){
+            session.send(
+                session.dialogData.selected_event_invitees.map((cur_event_attendee) => {
+                    return `- ${cur_event_attendee.guest_name} - ${cur_event_attendee.phone_number}`
+                })
+                .join('\n')
+            );
+        }
+    },
+    async function (session, results) {
+        session.replaceDialog("showContinueLoopBackEvent");
+    },
+])
+
+
+
+bot.dialog("showContinueLoopBackEvent", [
+    async function (session, results) {
+        builder.Prompts.confirm(session, "Are you interested in other events...?");
+    },
+    async function (session, results) {
+        if(results.response){
             // loop back...
-            session.send("showing previous events...")
             session.replaceDialog("showEventInformation");
         } else {
             session.endDialog("I hope you are happy with my service. Have a nice day...");
         }
     },
 ])
-
-
 
 bot.use({
     botbuilder: function (session, next) {
