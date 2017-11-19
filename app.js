@@ -291,10 +291,11 @@ bot.dialog("showEventInformation", [
                 )
                 .join('\n')
             );
+
+            session.replaceDialog("showContinueLoopBackEvent");
+        } else {
+            session.replaceDialog("showContinueLoopBackEvent");
         }
-    },
-    async function (session, results) {
-        session.replaceDialog("showContinueLoopBackEvent");
     },
 ])
 
