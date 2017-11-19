@@ -66,7 +66,7 @@ server.get('/chatbot', function(req, res){
             path.join( __dirname + '/view/chatbot.html' ),
             {
                 username: req.session.username,
-                BOT_SECRET: process.env.BOT_SECRET || 'BOT_SECRET'
+                BOT_URL: process.env.BOT_URL,
             }
         )
     } else {
@@ -174,7 +174,7 @@ var bot = new builder.UniversalBot(connector, [
 
         session.send([
             `Here is the information about this event`,
-            `${cur_event.title}`,
+            `- ${cur_event.title}`,
             `- Date: ${cur_event.event_date} ${cur_event.event_time}`,
             `- Location: ${cur_event.location}`,
         ].join('\n'));
