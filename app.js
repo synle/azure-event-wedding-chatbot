@@ -128,6 +128,8 @@ var bot = new builder.UniversalBot(connector, [
         if(!session.userData.current_user){
             var username = 'sl';
 
+            console.log('init the user...', username);
+
             session.userData.current_user = await dao.User.findOne({
                 where: {
                     username: username
@@ -147,19 +149,36 @@ var bot = new builder.UniversalBot(connector, [
             }
         });
 
+        session.dialogData.my_events.map((cur_event) => {
+            cur_event.friendlyString = `${cur_event.event_date} ${cur_event.event_time} - ${cur_event.title} in ${cur_event.location}`;
+        });
+
         // console.log(session.dialogData.my_events);
 
         session.send("Welcome to Wedding Event Booking Service.");
 
         builder.Prompts.choice(session, "Select one of the following events?", session.dialogData.my_events.map((cur_event, cur_idx) => {
             return [
-                    `${cur_event.event_date} ${cur_event.event_time} - ${cur_event.title} in ${cur_event.location}`,
+                    cur_event.friendlyString,
                 ].join('\n');
         }));
     },
+    // async function (session, results) {
+    //     if(results.response.score <= 0.5){
+    //     } else {
+    //         session.dialogData.my_events[results.response.index];
+    //     }
+    //     // console.log(results.response.score)
+    //     // { index: 3,
+    //     // entity: '11/21/2017 4AM - Sophia & Jack Wedding in Calabasas, Los Angeles, CA',
+    //     // score: 0.45 }
+    // },
     async function (session, results) {
-        var cur_event = session.dialogData.my_events[results.response.index];;
-        session.dialogData.selected_event = cur_event;
+        var confidence_score = (results.response.score * 100).toFixed();
+        console.log(results)
+        session.dialogData.selected_event = session.dialogData.my_events[results.response.index];
+
+        session.send(`You selected "${session.dialogData.selected_event.friendlyString}" (Confidence score of ${confidence_score}%)`)
 
         session.send("Gathering information regarding this event.");
 
@@ -171,7 +190,7 @@ var bot = new builder.UniversalBot(connector, [
 
         // console.log(session.dialogData.selected_event_photos);
         // console.log('session.dialogData.selected_event_photos', session.dialogData.selected_event_photos[0]);
-
+        var cur_event = session.dialogData.selected_event;
         session.send([
             `Here is the information about this event`,
             `- ${cur_event.title}`,
