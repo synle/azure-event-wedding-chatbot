@@ -20,67 +20,92 @@ async function doWork(){
 
     // mocking events...
     const data_people = [{
-        userId:1,
-        username: 'syle',
+        // userId:1,
+        userId: 'syle',
         emailId:'syle@syle.com',
         phoneNumber:'4084084088',
-        guestName:'Sy Le',
         firstName:'Sy',
         lastName:'Le',
     },
     {
-        userId:2,
-        username: 'johndoe',
-        emailId:'john@john.com',
-        phoneNumber:'5129098088',
-        guestName:'John Doe',
+        // userId:2,
+        userId: 'johndoe',
         firstName:'John',
         lastName:'Doe',
-    }];
+    },
+    {
+        // userId:3,
+        userId: 'adam',
+        emailId:'adam@mail.com',
+        firstName:'Adam',
+        lastName:'Woods',
+    },
+    {
+        // userId:4,
+        userId: 'sarita',
+        firstName:'Sarita',
+        lastName:'Chawla',
+    },
+    {
+        // userId:5,
+        userId: 'meghan',
+        firstName:'Meghan',
+        lastName:'Correa',
+    },
+    ];
+
+    var initial_mocked_user_count = data_people.length - 1;
     var from_user_id = util.getRandomPosInteger(10000);
     for (let i = 0; i < NUM_MOCK_INVITEES; i++){
-        const phoneNumber = util.getRandomPhoneNumber();
         const firstName = util.getRandomItem(name_list);
         const lastName = util.getRandomItem(name_list);
-        const emailDomain = util.getRandomItem(email_domain_list);
-        const emailId = (firstName + '.' + lastName + emailDomain).toLowerCase();
-        const guestName = firstName + ' ' + lastName;
 
         data_people.push({
-            userId: i + from_user_id,
-            emailId,
-            phoneNumber,
-            guestName,
+            // userId: i + from_user_id,
             firstName,
             lastName,
         })
     }
 
 
+    data_people.forEach(function(cur_people){
+        const firstName = cur_people.firstName;
+        const lastName = cur_people.lastName;
+
+        const phoneNumber = util.getRandomPhoneNumber();
+        const emailDomain = util.getRandomItem(email_domain_list);
+        const emailId = (firstName + '.' + lastName + emailDomain).toLowerCase();
+        const guestName = firstName + ' ' + lastName;
+
+
+        cur_people.userId = cur_people.userId || guestName.replace(' ', '.').toLowerCase() + '.' + phoneNumber
+        cur_people.emailId = cur_people.emailId || emailId
+        cur_people.phoneNumber = cur_people.phoneNumber || phoneNumber
+        cur_people.guestName = cur_people.guestName || guestName
+    });
+
+
+
+
+
     // generate random events...
     const from_event_id = util.getRandomPosInteger(100000);
     const data_events = [];
-    for (let i = 0; i < util.getRandomFromRange(4, 8); i++){
-        const eventId = util.getRandomPosInteger(500);
+    while(initial_mocked_user_count > 0){
+        for (let i = 0; i < util.getRandomFromRange(4, 8); i++){
+            const eventId = util.getRandomPosInteger(500);
 
-        const event_to_insert = {
-            eventId,
-            userId: 1,
+            const event_to_insert = {
+                eventId,
+                userId: data_people[initial_mocked_user_count].userId,
+            }
+
+            data_events.push(event_to_insert);
         }
 
-        data_events.push(event_to_insert);
+        initial_mocked_user_count--;
     }
 
-    for (let i = 0; i < util.getRandomFromRange(3, 6); i++){
-        const eventId = util.getRandomPosInteger(500);
-
-        const event_to_insert = {
-            eventId,
-            userId: 2,
-        }
-
-        data_events.push(event_to_insert);
-    }
 
     for (let i = 0; i < NUM_MOCK_EVENTS; i++){
         const eventId = i + from_event_id;
@@ -231,12 +256,13 @@ async function doWork(){
 
     db_records = data_people.map((item) => {
         return {
-            id: item.userId,
-            username: item.username || item.guestName.replace(' ', '.').toLowerCase() + '.' + item.userId,
+            // id: item.userId,
+            username: item.userId,
+            emailid: item.emailId,
             password: 'password',
             firstname: item.firstName,
             lastname: item.lastName,
-            active: true,
+            // active: true,
         };
 
         // console.log(item)

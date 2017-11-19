@@ -33,16 +33,16 @@ const sequelizeAdapter = !!process.env.MAIN_DB_HOST
     );
 
 var Event = sequelizeAdapter.define(
-    'Event',
+    'event',
     {
         event_id: { type: Sequelize.DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
-        title: { type: Sequelize.DataTypes.STRING },
-        location: { type: Sequelize.DataTypes.STRING },
-        event_date: { type: Sequelize.DataTypes.STRING },
-        event_time: { type: Sequelize.DataTypes.STRING },
-        description: { type: Sequelize.DataTypes.STRING },
-        user_id: { type: Sequelize.DataTypes.STRING },
-        voice_invite_key: { type: Sequelize.DataTypes.STRING },
+        title: { type: Sequelize.DataTypes.STRING, field: 'title' },
+        location: { type: Sequelize.DataTypes.STRING, field: 'location' },
+        event_date: { type: Sequelize.DataTypes.STRING, field: 'event_date' },
+        event_time: { type: Sequelize.DataTypes.STRING, field: 'event_time' },
+        description: { type: Sequelize.DataTypes.STRING, field: 'description' },
+        user_id: { type: Sequelize.DataTypes.STRING, field: 'user_id' },
+        voice_invite_key: { type: Sequelize.DataTypes.STRING, field: 'voice_invite_key' },
     },
     {
         freezeTableName: true,
@@ -54,7 +54,7 @@ var Event = sequelizeAdapter.define(
 
 
 var EventPhoto = sequelizeAdapter.define(
-    'EventPhoto',
+    'event_photo',
     {
         id: { type: Sequelize.DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
         event_id: { type: Sequelize.DataTypes.BIGINT },
@@ -71,7 +71,7 @@ var EventPhoto = sequelizeAdapter.define(
 
 
 var Invitee = sequelizeAdapter.define(
-    'Invitee',
+    'invitee',
     {
         id: { type: Sequelize.DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
         event_id: { type: Sequelize.DataTypes.BIGINT },
@@ -88,14 +88,13 @@ var Invitee = sequelizeAdapter.define(
 
 
 var User = sequelizeAdapter.define(
-    'User',
+    'event_users',
     {
-        id: { type: Sequelize.DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
-        username: { type: Sequelize.DataTypes.STRING  },
-        password: { type: Sequelize.DataTypes.STRING },
-        firstname: { type: Sequelize.DataTypes.STRING },
-        lastname: { type: Sequelize.DataTypes.STRING },
-        active: { type: Sequelize.DataTypes.STRING },
+        username: { type: Sequelize.DataTypes.STRING, field: 'user_id'  },
+        firstname: { type: Sequelize.DataTypes.STRING, field: 'first_name' },
+        lastname: { type: Sequelize.DataTypes.STRING, field: 'last_name' },
+        emailid: { type: Sequelize.DataTypes.STRING, field: 'email_id'},
+        password: { type: Sequelize.DataTypes.STRING, field: 'password'},
     },
     {
         freezeTableName: true,
