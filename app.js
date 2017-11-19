@@ -125,10 +125,20 @@ server.post('/api/messages', connector.listen());
 
 // This is a dinner reservation bot that uses multiple dialogs to prompt users for input.
 var bot = new builder.UniversalBot(connector, [
-    async function (session) {
-        let username = 'sl';
+    // Step 1
+    function (session) {
+        session.send("Welcome to Wedding Event Booking Service.");
 
         if(!session.userData.current_user){
+            builder.Prompts.text(session, 'Hi! What is your username?');
+        } else{
+            session.send(`Welcome back, ${session.userData.current_user.firstname}`);
+            session.replaceDialog("showEventInformation");
+        }
+    },
+    async function (session, results) {
+        if(!session.userData.current_user){
+
             console.log('init the user...', username);
 
             session.userData.current_user = await dao.User.findOne({
@@ -136,11 +146,18 @@ var bot = new builder.UniversalBot(connector, [
                     username: username
                 }
             });
-        } else {
-            console.log('user data from before...', session.userData);
-        }
 
-        // console.log(session.userData.current_user);
+            session.send(`Welcome, ${session.userData.current_user.firstname}`);
+            session.replaceDialog("showEventInformation");
+        }
+    },
+]);
+
+
+
+bot.dialog("showEventInformation", [
+    async function (session, args) {
+        const username = session.userData.current_user.username;
 
         let my_events = [];
         const cacheKeyMyEvents = `event-list-${username}`
@@ -163,38 +180,26 @@ var bot = new builder.UniversalBot(connector, [
             // set the new value into cache
             await redisUtil.set(cacheKeyMyEvents, my_events);
         }
-        session.dialogData.my_events = my_events
+        session.userData.my_events = my_events
 
 
 
-        session.dialogData.my_events.map((cur_event) => {
+        session.userData.my_events.map((cur_event) => {
             cur_event.friendlyString = `${cur_event.event_date} ${cur_event.event_time} - ${cur_event.title} in ${cur_event.location}`;
         });
 
-        // console.log(session.dialogData.my_events);
+        // console.log(session.userData.my_events);
 
-        session.send("Welcome to Wedding Event Booking Service.");
-
-        builder.Prompts.choice(session, "Select one of the following events?", session.dialogData.my_events.map((cur_event, cur_idx) => {
+        builder.Prompts.choice(session, "Select one of the following events?", session.userData.my_events.map((cur_event, cur_idx) => {
             return [
                     cur_event.friendlyString,
                 ].join('\n');
         }));
     },
-    // async function (session, results) {
-    //     if(results.response.score <= 0.5){
-    //     } else {
-    //         session.dialogData.my_events[results.response.index];
-    //     }
-    //     // console.log(results.response.score)
-    //     // { index: 3,
-    //     // entity: '11/21/2017 4AM - Sophia & Jack Wedding in Calabasas, Los Angeles, CA',
-    //     // score: 0.45 }
-    // },
     async function (session, results) {
         var confidence_score = (results.response.score * 100).toFixed();
-        console.log(results)
-        session.dialogData.selected_event = session.dialogData.my_events[results.response.index];
+        // console.log(results)
+        session.dialogData.selected_event = session.userData.my_events[results.response.index];
 
         session.send(`You selected "${session.dialogData.selected_event.friendlyString}" (Confidence score of ${confidence_score}%)`)
 
@@ -230,14 +235,20 @@ var bot = new builder.UniversalBot(connector, [
             }
         });
 
-
-        // builder.Prompts.confirm(session, "Do you want to look at the latest comments?");
+        // loop back...
+        session.replaceDialog("showEventInformation");
     },
-    // async function (session, results) {
-    //     if(results.response){
-    //         // show the comments...
-    //     } else {
-    //         session.endDialog('I hope you are happy with my service');
-    //     }
-    // },
-]);
+])
+
+
+
+bot.use({
+    botbuilder: function (session, next) {
+        console.log('--incoming', session.message.text);
+        next();
+    },
+    send: function (event, next) {
+        console.log('--outgoing', event.text);
+        next();
+    }
+})
