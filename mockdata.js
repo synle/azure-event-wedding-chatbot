@@ -21,12 +21,21 @@ async function doWork(){
     // mocking events...
     const data_people = [{
         userId:1,
-        username: 'sl',
-        emailId:'sl@sl.com',
+        username: 'syle',
+        emailId:'syle@syle.com',
         phoneNumber:'4084084088',
         guestName:'Sy Le',
-        firstName:'sy',
-        lastName:'le',
+        firstName:'Sy',
+        lastName:'Le',
+    },
+    {
+        userId:2,
+        username: 'johndoe',
+        emailId:'john@john.com',
+        phoneNumber:'5129098088',
+        guestName:'John Doe',
+        firstName:'John',
+        lastName:'Doe',
     }];
     var from_user_id = util.getRandomPosInteger(10000);
     for (let i = 0; i < NUM_MOCK_INVITEES; i++){
@@ -57,6 +66,17 @@ async function doWork(){
         const event_to_insert = {
             eventId,
             userId: 1,
+        }
+
+        data_events.push(event_to_insert);
+    }
+
+    for (let i = 0; i < util.getRandomFromRange(3, 6); i++){
+        const eventId = util.getRandomPosInteger(500);
+
+        const event_to_insert = {
+            eventId,
+            userId: 2,
         }
 
         data_events.push(event_to_insert);
