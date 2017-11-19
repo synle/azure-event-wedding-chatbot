@@ -9,6 +9,7 @@ const cookieSession = require('cookie-session')
 
 const dao = require('./dao');
 const util = require('./util')
+const redisUtil = require('./redisUtil')
 
 
 const server = express()
@@ -125,9 +126,9 @@ server.post('/api/messages', connector.listen());
 // This is a dinner reservation bot that uses multiple dialogs to prompt users for input.
 var bot = new builder.UniversalBot(connector, [
     async function (session) {
-        if(!session.userData.current_user){
-            var username = 'sl';
+        let username = 'sl';
 
+        if(!session.userData.current_user){
             console.log('init the user...', username);
 
             session.userData.current_user = await dao.User.findOne({
@@ -141,13 +142,30 @@ var bot = new builder.UniversalBot(connector, [
 
         // console.log(session.userData.current_user);
 
+        let my_events = [];
+        const cacheKeyMyEvents = `event-list-${username}`
 
-        session.dialogData.my_events = await dao.Event.findAll({
-            order: 'event_date ASC',
-            where: {
-                user_id: session.userData.current_user.id
+        try{
+            // get it from cache...
+            my_events = await redisUtil.get(cacheKeyMyEvents);
+            if(!my_events){
+                throw 'data is not in cache...'
             }
-        });
+        } catch(e){
+            // get data from database and set it...
+            my_events = await dao.Event.findAll({
+                order: 'event_date ASC',
+                where: {
+                    user_id: session.userData.current_user.id
+                }
+            });
+
+            // set the new value into cache
+            await redisUtil.set(cacheKeyMyEvents, my_events);
+        }
+        session.dialogData.my_events = my_events
+
+
 
         session.dialogData.my_events.map((cur_event) => {
             cur_event.friendlyString = `${cur_event.event_date} ${cur_event.event_time} - ${cur_event.title} in ${cur_event.location}`;
