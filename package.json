@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "echo 'Starting Server: npm start'; node app.js",
+    "start": "node app.js",
     "test": "echo \"Error: no test specified\"",
     "test2": "node nukedata.js; node mockdata.js"
   },
