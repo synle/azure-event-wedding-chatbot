@@ -185,6 +185,8 @@ bot.dialog("showEventInformation", [
         const username = session.userData.current_user.username;
 
         let my_events = [];
+
+        // cache key for redis
         const cacheKeyMyEvents = `event-list-${username}`
 
         try{
@@ -254,6 +256,9 @@ bot.dialog("showEventInformation", [
         session.send(msg);
 
 
+        session.send(`Map for this event: https://www.google.com/maps/place/?q=${encodeURIComponent(cur_event.location)}`)
+
+
         session.dialogData.selected_event_invitees = await dao.Invitee.findAll({
             where: {
                 event_id: session.dialogData.selected_event.event_id
@@ -280,6 +285,9 @@ bot.use({
             // logout
             session.userData = {};
             return session.endDialog("You are logged out...")
+        }
+        else {
+            // log this
         }
 
         next();
