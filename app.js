@@ -125,33 +125,58 @@ server.post('/api/messages', connector.listen());
 
 // This is a dinner reservation bot that uses multiple dialogs to prompt users for input.
 var bot = new builder.UniversalBot(connector, [
-    // Step 1
     function (session) {
         session.send("Welcome to Wedding Event Booking Service.");
 
         if(!session.userData.current_user){
-            builder.Prompts.text(session, 'Hi! What is your username?');
+            session.beginDialog("showAuthentication");
         } else{
             session.send(`Welcome back, ${session.userData.current_user.firstname}`);
             session.replaceDialog("showEventInformation");
         }
     },
     async function (session, results) {
-        if(!session.userData.current_user){
-
-            console.log('init the user...', username);
-
-            session.userData.current_user = await dao.User.findOne({
-                where: {
-                    username: username
-                }
-            });
-
-            session.send(`Welcome, ${session.userData.current_user.firstname}`);
-            session.replaceDialog("showEventInformation");
-        }
+        session.replaceDialog("showEventInformation");
     },
 ]);
+
+
+
+bot.dialog("showAuthentication", [
+    // Step 1
+    async function (session) {
+        builder.Prompts.text(session, 'Hi! What is your username?');
+    },
+    async function (session, results) {
+        session.dialogData.username = results.response;
+        builder.Prompts.text(session, 'What is your password?');
+    },
+    async function (session, results) {
+        session.dialogData.password = results.response;
+
+        const {username, password} = session.dialogData;
+
+        // look for users...
+        try{
+            const foundUser = await dao.User.findOne({
+                where: {
+                    username,
+                    password,
+                }
+            })
+
+            if(!foundUser){
+                throw 'not found...'
+            }
+
+            session.userData.current_user = foundUser;
+            session.endDialog(`Welcome, ${session.userData.current_user.firstname}`);
+        } catch(e){
+            session.send('Invalid username or password... Please re-enter your username and password')
+            session.replaceDialog("showAuthentication");
+        }
+    },
+])
 
 
 
@@ -234,9 +259,16 @@ bot.dialog("showEventInformation", [
                 event_id: session.dialogData.selected_event.event_id
             }
         });
-
-        // loop back...
-        session.replaceDialog("showEventInformation");
+    },
+    async function (session, results) {
+        console.log(results);
+        if(resuls.response){
+            // loop back...
+            session.send("showing previous events...")
+            session.replaceDialog("showEventInformation");
+        } else {
+            session.endDialog("I hope you are happy with my service. Have a nice day...");
+        }
     },
 ])
 
@@ -244,7 +276,12 @@ bot.dialog("showEventInformation", [
 
 bot.use({
     botbuilder: function (session, next) {
-        console.log('--incoming', session.message.text);
+        if(session.message.text.toLowerCase() === 'logout'){
+            // logout
+            session.userData = {};
+            return session.endDialog("You are logged out...")
+        }
+
         next();
     },
     send: function (event, next) {
