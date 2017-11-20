@@ -191,15 +191,13 @@ bot.dialog("showAuthentication", [
 bot.dialog("showEventInformation", [
     async function (session, args) {
         const username = session.userData.current_user.username;
+        session.userData.cache_key = `event-list-${username}`;// cache key for redis
 
         let my_events = [];
 
-        // cache key for redis
-        const cacheKeyMyEvents = `event-list-${username}`
-
         try{
             // get it from cache...
-            my_events = await redisUtil.get(cacheKeyMyEvents);
+            my_events = await redisUtil.get(session.userData.cache_key);
             if(!my_events){
                 throw 'data is not in cache...'
             }
@@ -213,7 +211,7 @@ bot.dialog("showEventInformation", [
             });
 
             // set the new value into cache
-            await redisUtil.set(cacheKeyMyEvents, my_events);
+            await redisUtil.set(session.userData.cache_key, my_events);
         }
         session.userData.my_events = my_events
 
