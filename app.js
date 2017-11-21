@@ -127,6 +127,17 @@ const connector = new builder.ChatConnector({
     appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
 
+var documentDbOptions = {
+    host: 'Your-Azure-DocumentDB-URI',
+    masterKey: 'Your-Azure-DocumentDB-Key',
+    database: 'botdocs',
+    collection: 'botdata'
+}
+
+var docDbClient = new azure.DocumentDbClient(documentDbOptions);
+var cosmosStorage = new azure.AzureBotStorage({ gzipData: false }, docDbClient);
+
+
 // Listen for messages from users
 server.post('/api/messages', connector.listen());
 
@@ -148,7 +159,8 @@ var bot = new builder.UniversalBot(connector, [
         console.log('step 2');
         session.replaceDialog("showEventInformation");
     },
-]);
+])
+.set('storage', cosmosStorage);
 
 
 
