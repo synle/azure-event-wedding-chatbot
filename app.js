@@ -4,6 +4,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const cookieSession = require('cookie-session')
+var azure = require('botbuilder-azure');
 
 
 
@@ -160,7 +161,15 @@ var bot = new builder.UniversalBot(connector, [
         session.replaceDialog("showEventInformation");
     },
 ])
-.set('storage', cosmosStorage);
+
+
+// bot.set('storage', cosmosStorage);
+
+// Do not persist userData
+// bot.set(`persistUserData`, false);
+
+// Do not persist conversationData
+// bot.set(`persistConversationData`, false);
 
 
 
