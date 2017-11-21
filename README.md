@@ -23,3 +23,10 @@ https://docs.microsoft.com/en-us/bot-framework/nodejs/bot-builder-nodejs-dialog-
 https://github.com/Microsoft/BotFramework-Emulator/releases
 https://medium.com/the-node-js-collection/bots-are-banging-getting-started-with-the-microsoft-bot-framework-node-js-b16ccb96b32f
 https://docs.microsoft.com/en-us/bot-framework/deploy-bot-local-git
+
+
+
+
+```
+node nukecache.js ; node nukedata.js ; node mockdata.js
+```

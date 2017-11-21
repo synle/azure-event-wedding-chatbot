@@ -93,11 +93,11 @@ async function doWork(){
     const data_events = [];
     while(initial_mocked_user_count > 0){
         for (let i = 0; i < util.getRandomFromRange(4, 8); i++){
-            const eventId = util.getRandomPosInteger(500);
+            const eventId = i * 100 + util.getRandomPosInteger(500);
 
             const event_to_insert = {
                 eventId,
-                userId: data_people[initial_mocked_user_count].userId,
+                userId: data_people[i].userId,
             }
 
             data_events.push(event_to_insert);

@@ -2,7 +2,7 @@
 const redisUtil = require('./redisUtil')
 
 async function _doWork(){
-    redisUtil.clearAll();
+    await redisUtil.clearAll();
 };
 
 _doWork();
