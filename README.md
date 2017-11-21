@@ -13,17 +13,19 @@
 ![alt text](./images/2.png "Sample Screenshot")
 
 
-https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-power-bi-dashboard
+
 
 
 ### Sources/Links:
-https://docs.microsoft.com/en-us/bot-framework/nodejs/bot-builder-nodejs-quickstart
-https://docs.microsoft.com/en-us/bot-framework/nodejs/bot-builder-nodejs-overview
-https://docs.microsoft.com/en-us/bot-framework/nodejs/bot-builder-nodejs-dialog-manage-conversation-flow
-https://github.com/Microsoft/BotFramework-Emulator/releases
-https://medium.com/the-node-js-collection/bots-are-banging-getting-started-with-the-microsoft-bot-framework-node-js-b16ccb96b32f
-https://docs.microsoft.com/en-us/bot-framework/deploy-bot-local-git
+- https://docs.microsoft.com/en-us/bot-framework/nodejs/bot-builder-nodejs-quickstart
+- https://docs.microsoft.com/en-us/bot-framework/nodejs/bot-builder-nodejs-overview
+- https://docs.microsoft.com/en-us/bot-framework/nodejs/bot-builder-nodejs-dialog-manage-conversation-flow
+- https://github.com/Microsoft/BotFramework-Emulator/releases
+- https://medium.com/the-node-js-collection/bots-are-banging-getting-started-with-the-microsoft-bot-framework-node-js-b16ccb96b32f
+- https://docs.microsoft.com/en-us/bot-framework/deploy-bot-local-git
 
+- https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-power-bi-dashboard
+- https://docs.microsoft.com/en-us/bot-framework/rest-api/bot-framework-rest-connector-authentication
 
 
 
