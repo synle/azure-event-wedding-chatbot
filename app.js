@@ -134,6 +134,7 @@ server.post('/api/messages', connector.listen());
 // This is a dinner reservation bot that uses multiple dialogs to prompt users for input.
 var bot = new builder.UniversalBot(connector, [
     function (session) {
+        console.log('step 1');
         session.send("Welcome to Wedding Event Booking Service.");
 
         if(!session.userData.current_user){
@@ -144,6 +145,7 @@ var bot = new builder.UniversalBot(connector, [
         }
     },
     async function (session, results) {
+        console.log('step 2');
         session.replaceDialog("showEventInformation");
     },
 ]);
@@ -153,13 +155,17 @@ var bot = new builder.UniversalBot(connector, [
 bot.dialog("showAuthentication", [
     // Step 1
     async function (session) {
+        console.log('step 3');
         builder.Prompts.text(session, 'Hi! What is your username?');
     },
     async function (session, results) {
+        console.log('step 4');
         session.dialogData.username = results.response;
         builder.Prompts.text(session, 'What is your password?');
     },
     async function (session, results) {
+        console.log('step 5');
+
         session.dialogData.password = results.response;
 
         const {username, password} = session.dialogData;
@@ -190,23 +196,28 @@ bot.dialog("showAuthentication", [
 
 bot.dialog("showEventInformation", [
     async function (session, args) {
+        console.log('step 6');
+
         const username = session.userData.current_user.username;
         session.userData.cache_key = `event-list-${username}`;// cache key for redis
 
         let my_events = [];
 
+
+
         try{
             // get it from cache...
             my_events = await redisUtil.get(session.userData.cache_key);
-            if(!my_events){
+            if(!my_events || my_events.length === 0){
                 throw 'data is not in cache...'
             }
         } catch(e){
             // get data from database and set it...
+            console.log('look up data for users', session.userData.current_user.username);
             my_events = await dao.Event.findAll({
                 order: 'event_date ASC',
                 where: {
-                    user_id: session.userData.current_user.id
+                    user_id: session.userData.current_user.username
                 }
             });
 
@@ -214,7 +225,6 @@ bot.dialog("showEventInformation", [
             await redisUtil.set(session.userData.cache_key, my_events);
         }
         session.userData.my_events = my_events
-
 
 
         session.userData.my_events.map((cur_event) => {
@@ -230,6 +240,8 @@ bot.dialog("showEventInformation", [
         }));
     },
     async function (session, results) {
+        console.log('step 7');
+
         var confidence_score = (results.response.score * 100).toFixed();
         // console.log(results)
         session.dialogData.selected_event = session.userData.my_events[results.response.index];
@@ -277,6 +289,8 @@ bot.dialog("showEventInformation", [
         builder.Prompts.confirm(session, "Should we show the attendee information...?");
     },
     async function (session, results) {
+        console.log('step 8');
+
         console.log(results);
         if(results.response){
             session.send(
@@ -327,7 +341,7 @@ bot.use({
         next();
     },
     send: function (event, next) {
-        console.log('--outgoing', event.text);
+        // console.log('>> outgoing', event.text);
         next();
     }
 })
