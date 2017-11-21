@@ -217,7 +217,8 @@ async function doWork(){
     });
     try{
         console.log('Invitee', db_records.length)
-        await dao.Invitee.bulkCreate(db_records);
+        // await dao.Invitee.bulkCreate(db_records);
+        await Promise.all(db_records.map(dao.Invitee.create));
     } catch(e){
         console.log('dao.Invitee.bulkCreate(db_records);')
     }
@@ -243,7 +244,8 @@ async function doWork(){
     });
     try{
         console.log('EventPhoto', db_records.length)
-        await dao.EventPhoto.bulkCreate(db_records);
+        // await dao.EventPhoto.bulkCreate(db_records);
+        await Promise.all(db_records.map(dao.EventPhoto.create));
     } catch(e){
         console.log('dao.EventPhoto.bulkCreate(db_records);')
     }
@@ -274,7 +276,8 @@ async function doWork(){
     });
     try{
         console.log('User', db_records.length)
-        await dao.User.bulkCreate(db_records);
+        // await dao.User.bulkCreate(db_records);
+        await Promise.all(db_records.map(dao.User.create));
     } catch(e){
         console.log('dao.User.bulkCreate(db_records);')
     }
@@ -311,13 +314,11 @@ async function doWork(){
     });
 
     console.log('Event', db_records.length)
-    db_records.forEach(function(event){
-        try{
-            dao.Event.create(event)
-        } catch(e){
-            console.log('dao.Event.bulkCreate(db_records);', event.title)
-        }
-    });
+    try{
+        await Promise.all(db_records.map(dao.Event.create));
+    } catch(e){
+        console.log('dao.Event.bulkCreate(db_records);', e)
+    }
 }
 
 // mocks

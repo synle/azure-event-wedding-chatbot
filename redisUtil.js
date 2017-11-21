@@ -16,6 +16,13 @@ if(shouldUseCloud){
     );
 
     module.exports = {
+        clearAll: function(){
+            return new Promise(function(resolve, reject) {
+                client.flushdb(function(err, reply) {
+                    console.log('Nuke all caches', err, reply);
+                });
+            })
+        },
         clear: function(ckey){
             return new Promise(function(resolve, reject) {
                     client.set(ckey, "null", function(err, reply) {

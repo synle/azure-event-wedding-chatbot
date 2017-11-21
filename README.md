@@ -13,6 +13,7 @@
 ![alt text](./images/2.png "Sample Screenshot")
 
 
+https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-power-bi-dashboard
 
 
 ### Sources/Links:
