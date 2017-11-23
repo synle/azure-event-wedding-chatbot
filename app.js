@@ -121,6 +121,17 @@ server.get('/', function(req, res){
 
 
 
+server.get('/powerbi_report.html', function(req, res){
+    res.render(
+        path.join( __dirname + '/view/powerbi_report.html' ),
+        {
+            POWER_BI_REPORT_URL: process.env.POWER_BI_REPORT_URL,
+        }
+    )
+})
+
+
+
 // // Create chat connector for communicating with the Bot Framework Service
 const builder = require('botbuilder');
 const connector = new builder.ChatConnector({
