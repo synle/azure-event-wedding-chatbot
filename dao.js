@@ -103,6 +103,20 @@ var User = sequelizeAdapter.define(
 );
 
 
+
+var BotConfidence = sequelizeAdapter.define(
+    'bot_confidence',
+    {
+        username: { type: Sequelize.DataTypes.STRING },
+        score: { type: Sequelize.DataTypes.FLOAT },
+        event_id: { type: Sequelize.DataTypes.STRING },
+    },
+    {
+        freezeTableName: true,
+    }
+);
+
+
 // private
 // might only need to run for init call...
 var promiseSequelizeInit = sequelizeAdapter.sync().then(
@@ -121,5 +135,5 @@ module.exports = {
     Event: new Table(Event, promiseSequelizeInit),
     EventPhoto: new Table(EventPhoto, promiseSequelizeInit),
     Invitee: new Table(Invitee, promiseSequelizeInit),
-    // FileUpload: new Table(FileUpload, promiseSequelizeInit),
+    BotConfidence: new Table(Invitee, promiseSequelizeInit),
 }
