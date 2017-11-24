@@ -19,8 +19,8 @@ if(shouldUseCloud){
         clearAll: function(){
             return new Promise(function(resolve, reject) {
                 client.flushdb(function(err, reply) {
-                    resolve();
                     console.log('Nuke all caches', err, reply);
+                    resolve();
                 });
             })
         },
