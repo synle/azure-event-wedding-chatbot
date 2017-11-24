@@ -29,6 +29,9 @@
 
 
 
+- https://docs.microsoft.com/en-us/azure/mysql/howto-configure-ssl
+
+
 ```
 node nukecache.js ; node nukedata.js ; node mockdata.js
 ```
