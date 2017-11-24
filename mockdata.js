@@ -7,6 +7,7 @@ const util = require('./util')
 const NUM_MOCK_EVENTS = 1000;
 const NUM_MOCK_INVITEES = 3000;
 const BULK_CREATE_LIMITS = 100;
+const NUM_BOT_CONFIDENCES = 6000;
 
 let name_list,
     city_list,
@@ -205,7 +206,7 @@ async function doWork(){
 
 
     // mock confidence score...
-    const data_condifence = _.range(5000)
+    const data_confidence = _.range(NUM_BOT_CONFIDENCES)
         .map(() => {
             const cur_user = util.getRandomItem(data_people);
             const cur_event =  util.getRandomItem(data_events);
@@ -223,11 +224,20 @@ async function doWork(){
     console.log('>> __photo_list', __photo_list.length);
     console.log('>> data_people', data_people.length);
     console.log('>> data_events', data_events.length);
-    console.log('>> data_condifence', data_condifence.length);
+    console.log('>> data_confidence', data_confidence.length);
 
     console.log('=========');
 
 
+
+
+
+
+
+
+    // INSERT TO DATABASE
+    // INSERT TO DATABASE
+    // INSERT TO DATABASE
     // INSERT TO DATABASE
     // // insert into db
     db_records = __photo_list.map((item) => {
@@ -322,18 +332,29 @@ async function doWork(){
 
 
 
+
+
+
     // condifdence score
-    db_records = data_condifence;
-    console.log('Confidence_Score', db_records.length)
+    db_records = data_confidence.map((item) => {
+        return {
+            username: item.username,
+            score: item.score,
+            event_id: item.event_id,
+        };
+    });
+
     try{
+        console.log('Confidence_Score', db_records.length)
         await dao.BotConfidence.bulkCreate(db_records, BULK_CREATE_LIMITS);
+        // await Promise.all(db_records.map(dao.BotConfidence.create));
     } catch(e){
         console.log('dao.BotConfidence.bulkCreate(db_records)', e)
     }
 
 
 
-    // let db_records;
+
     db_records = __attendee_list.map((item) => {
         return {
             event_id: item.eventId,

@@ -107,6 +107,7 @@ var User = sequelizeAdapter.define(
 var BotConfidence = sequelizeAdapter.define(
     'bot_confidence',
     {
+        id: { type: Sequelize.DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
         username: { type: Sequelize.DataTypes.STRING, field: 'user_id'  },
         score: { type: Sequelize.DataTypes.FLOAT },
         event_id: { type: Sequelize.DataTypes.STRING },
@@ -135,5 +136,5 @@ module.exports = {
     Event: new Table(Event, promiseSequelizeInit),
     EventPhoto: new Table(EventPhoto, promiseSequelizeInit),
     Invitee: new Table(Invitee, promiseSequelizeInit),
-    BotConfidence: new Table(Invitee, promiseSequelizeInit),
+    BotConfidence: new Table(BotConfidence, promiseSequelizeInit),
 }
