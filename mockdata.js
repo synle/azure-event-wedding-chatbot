@@ -4,8 +4,8 @@ const _ = require('lodash');
 const dao = require('./dao')
 const util = require('./util')
 
-const NUM_MOCK_EVENTS = 200;
-const NUM_MOCK_INVITEES = 1000;
+const NUM_MOCK_EVENTS = 1000;
+const NUM_MOCK_INVITEES = 3000;
 const BULK_CREATE_LIMITS = 100;
 
 let name_list,
@@ -17,6 +17,8 @@ let name_list,
     user_list = []
 
 async function doWork(){
+    await dao.init();
+
     let __attendee_list = [];
     let __photo_list = [];
 
@@ -91,9 +93,17 @@ async function doWork(){
 
     // generate random events...
     let cur_last_event_id = 0;
+    try{
+        const lastEvent = await dao.Event.findAll({
+            order: 'event_id DESC',
+            limit: 1,
+        })
+        cur_last_event_id = lastEvent[0].event_id;
+    } catch(e){}
+
     const data_events = [];
     while(initial_mocked_user_count > 0){
-        for (let i = 0; i < util.getRandomFromRange(4, 8); i++){
+        for (let i = 0; i < util.getRandomFromRange(6, 15); i++){
             const eventId = ++cur_last_event_id;
 
             const event_to_insert = {
@@ -220,9 +230,6 @@ async function doWork(){
 
     // INSERT TO DATABASE
     // // insert into db
-    await dao.init();
-
-
     db_records = __photo_list.map((item) => {
         return {
             // id: item.id,
