@@ -93,7 +93,7 @@ var User = sequelizeAdapter.define(
         username: { type: Sequelize.DataTypes.STRING, field: 'user_id'  },
         firstname: { type: Sequelize.DataTypes.STRING, field: 'first_name' },
         lastname: { type: Sequelize.DataTypes.STRING, field: 'last_name' },
-        emailid: { type: Sequelize.DataTypes.STRING, field: 'email_id'},
+        emailid: { type: Sequelize.DataTypes.STRING, field: 'mail_id'},
         password: { type: Sequelize.DataTypes.STRING, field: 'password'},
     },
     {
