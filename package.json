@@ -24,7 +24,7 @@
     "install": "^0.10.2",
     "lodash": "^4.17.4",
     "moment": "^2.19.2",
-    "mysql2": "^1.5.1",
+    "mysql": "^2.15.0",
     "npm": "^5.5.1",
     "redis": "^2.8.0",
     "sequelize-simple-adapter": "git+https://github.com/synle/sequelize-simple-adapter.git",
