@@ -30,7 +30,7 @@
 
 
 - https://docs.microsoft.com/en-us/azure/mysql/howto-configure-ssl
-
+- https://stackoverflow.com/questions/13406663/how-can-i-allow-unknown-users-to-access-my-sql-azure-db
 
 ```
 node nukecache.js ; node nukedata.js ; node mockdata.js
