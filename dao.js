@@ -10,7 +10,7 @@ const sequelizeAdapter = !!process.env.MAIN_DB_HOST
       process.env.MAIN_DB_PASSWORD,
       {
         host: process.env.MAIN_DB_HOST,
-        dialect: 'mssql',
+        dialect: process.env.MAIN_DB_DIALECT,
         logging: false,
         pool: {
           max: 5,
