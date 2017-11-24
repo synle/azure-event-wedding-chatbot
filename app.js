@@ -13,6 +13,11 @@ const redisUtil = require('./redisUtil')
 
 
 const _doWork = async function(){
+    await redisUtil.clearAll();
+    console.log('Clear Cache Done...');
+    console.log('Starting Server...');
+
+
     const server = express()
 
     // server.get('/', (req, res) => res.send('Hello World!'))
