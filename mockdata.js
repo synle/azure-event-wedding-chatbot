@@ -1,9 +1,10 @@
 const moment = require('moment');
+const _ = require('lodash');
 
 const dao = require('./dao')
 const util = require('./util')
 
-const NUM_MOCK_EVENTS = 10;
+const NUM_MOCK_EVENTS = 1000;
 const NUM_MOCK_INVITEES = 100;
 
 let name_list,
@@ -89,7 +90,6 @@ async function doWork(){
 
 
     // generate random events...
-    const from_event_id = util.getRandomPosInteger(100000);
     const data_events = [];
     while(initial_mocked_user_count > 0){
         for (let i = 0; i < util.getRandomFromRange(4, 8); i++){
@@ -108,8 +108,9 @@ async function doWork(){
 
 
     for (let i = 0; i < NUM_MOCK_EVENTS; i++){
-        const eventId = i + from_event_id;
         const eventOwner = util.getRandomItem(data_people);
+        const eventId = eventOwner.userId * 10000
+            + util.getRandomPosInteger(9) * 1000;
 
         const event_to_insert = {
             eventId,
@@ -191,6 +192,20 @@ async function doWork(){
     //
 
 
+
+
+    // mock confidence score...
+    const data_condifence = _.range(5000)
+        .map(() => {
+            const cur_user = util.getRandomItem(data_people);
+            const cur_event =  util.getRandomItem(data_events);
+
+            return {
+                event_id: cur_event.eventId,
+                username: cur_user.userId,
+                score: util.getRandomPosInteger(100),
+            };
+        });
 
 
 
@@ -318,6 +333,17 @@ async function doWork(){
         await Promise.all(db_records.map(dao.Event.create));
     } catch(e){
         console.log('dao.Event.bulkCreate(db_records);', e)
+    }
+
+
+
+    // condifdence score
+    db_records = data_condifence;
+    console.log('Confidence_Score', db_records.length)
+    try{
+        await Promise.all(db_records.map(dao.Confidence_Score.create));
+    } catch(e){
+        console.log('dao.Confidence_Score.bulkCreate(db_records);', e)
     }
 }
 

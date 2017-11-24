@@ -107,7 +107,7 @@ var User = sequelizeAdapter.define(
 var BotConfidence = sequelizeAdapter.define(
     'bot_confidence',
     {
-        username: { type: Sequelize.DataTypes.STRING },
+        username: { type: Sequelize.DataTypes.STRING, field: 'user_id'  },
         score: { type: Sequelize.DataTypes.FLOAT },
         event_id: { type: Sequelize.DataTypes.STRING },
     },
