@@ -6,6 +6,7 @@ const util = require('./util')
 
 const NUM_MOCK_EVENTS = 200;
 const NUM_MOCK_INVITEES = 1000;
+const BULK_CREATE_LIMITS = 100;
 
 let name_list,
     city_list,
@@ -89,10 +90,11 @@ async function doWork(){
 
 
     // generate random events...
+    let cur_last_event_id = 0;
     const data_events = [];
     while(initial_mocked_user_count > 0){
         for (let i = 0; i < util.getRandomFromRange(4, 8); i++){
-            const eventId = i * 100 + util.getRandomPosInteger(500);
+            const eventId = ++cur_last_event_id;
 
             const event_to_insert = {
                 eventId,
@@ -107,10 +109,8 @@ async function doWork(){
 
 
     for (let i = 0; i < NUM_MOCK_EVENTS; i++){
-        const eventOwnerUserIdx = util.getRandomPosInteger(data_people.length);
-        const eventOwner = data_people[eventOwnerUserIdx];
-        const eventId = eventOwnerUserIdx * 10000
-            + util.getRandomPosInteger(9) * 1000;
+        const eventOwner = util.getRandomItem(data_people);
+        const eventId = ++cur_last_event_id;
 
         const event_to_insert = {
             eventId,
@@ -239,10 +239,10 @@ async function doWork(){
     });
     try{
         console.log('EventPhoto', db_records.length)
-        await dao.EventPhoto.bulkCreate(db_records, 200);
+        await dao.EventPhoto.bulkCreate(db_records, BULK_CREATE_LIMITS);
         // await Promise.all(db_records.map(dao.EventPhoto.create));
     } catch(e){
-        console.log('dao.EventPhoto.bulkCreate(db_records, 200);', e)
+        console.log('dao.EventPhoto.bulkCreate(db_records)', e)
     }
 
 
@@ -271,10 +271,10 @@ async function doWork(){
     });
     try{
         console.log('User', db_records.length)
-        await dao.User.bulkCreate(db_records, 200);
+        await dao.User.bulkCreate(db_records, BULK_CREATE_LIMITS);
         // await Promise.all(db_records.map(dao.User.create));
     } catch(e){
-        console.log('dao.User.bulkCreate(db_records, 200);', e)
+        console.log('dao.User.bulkCreate(db_records)', e)
     }
 
 
@@ -307,10 +307,10 @@ async function doWork(){
 
     try{
         console.log('Event', db_records.length)
-        await dao.Event.bulkCreate(db_records, 200);
+        await dao.Event.bulkCreate(db_records, BULK_CREATE_LIMITS);
         // await Promise.all(db_records.map(dao.Event.create));
     } catch(e){
-        console.log('dao.Event.bulkCreate(db_records, 200);', e)
+        console.log('dao.Event.bulkCreate(db_records)', e)
     }
 
 
@@ -319,9 +319,9 @@ async function doWork(){
     db_records = data_condifence;
     console.log('Confidence_Score', db_records.length)
     try{
-        dao.Confidence_Score.bulkCreate(db_records, 200);
+        await dao.BotConfidence.bulkCreate(db_records, BULK_CREATE_LIMITS);
     } catch(e){
-        console.log('dao.Confidence_Score.bulkCreate(db_records, 200);', e)
+        console.log('dao.BotConfidence.bulkCreate(db_records)', e)
     }
 
 
@@ -343,9 +343,9 @@ async function doWork(){
     });
     try{
         console.log('Invitee', db_records.length)
-        dao.Invitee.bulkCreate(db_records, 200);
+        await dao.Invitee.bulkCreate(db_records, BULK_CREATE_LIMITS);
     } catch(e){
-        console.log('dao.Invitee.bulkCreate(db_records, 200);', e)
+        console.log('dao.Invitee.bulkCreate(db_records)', e)
     }
 }
 
