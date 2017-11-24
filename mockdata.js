@@ -4,8 +4,8 @@ const _ = require('lodash');
 const dao = require('./dao')
 const util = require('./util')
 
-const NUM_MOCK_EVENTS = 1000;
-const NUM_MOCK_INVITEES = 100;
+const NUM_MOCK_EVENTS = 200;
+const NUM_MOCK_INVITEES = 1000;
 
 let name_list,
     city_list,
@@ -62,7 +62,6 @@ async function doWork(){
         const lastName = util.getRandomItem(name_list);
 
         data_people.push({
-            // userId: i + from_user_id,
             firstName,
             lastName,
         })
@@ -108,8 +107,9 @@ async function doWork(){
 
 
     for (let i = 0; i < NUM_MOCK_EVENTS; i++){
-        const eventOwner = util.getRandomItem(data_people);
-        const eventId = eventOwner.userId * 10000
+        const eventOwnerUserIdx = util.getRandomPosInteger(data_people.length);
+        const eventOwner = data_people[eventOwnerUserIdx];
+        const eventId = eventOwnerUserIdx * 10000
             + util.getRandomPosInteger(9) * 1000;
 
         const event_to_insert = {
@@ -223,33 +223,6 @@ async function doWork(){
     await dao.init();
 
 
-    // let db_records;
-    db_records = __attendee_list.map((item) => {
-        return {
-            // id: item.id,
-            event_id: item.eventId,
-            email_id: item.emailId,
-            phone_number: item.phoneNumber,
-            guest_name: item.guestName,
-        };
-
-        // console.log(item)
-        // { eventId: 1009,
-        // emailId: 'maya.hunter@yahoo.com',
-        // phoneNumber: '4876731745',
-        // guestName: 'Maya Hunter' }
-    });
-    try{
-        console.log('Invitee', db_records.length)
-        // await dao.Invitee.bulkCreate(db_records);
-        await Promise.all(db_records.map(dao.Invitee.create));
-    } catch(e){
-        console.log('dao.Invitee.bulkCreate(db_records);')
-    }
-
-
-
-
     db_records = __photo_list.map((item) => {
         return {
             // id: item.id,
@@ -259,8 +232,6 @@ async function doWork(){
             file_name: item.fileName,
         }
 
-        // dao.EventPhoto.create()
-
         // console.log(item)
         // { eventId: 1009,
         // photoUrl: 'http://heavensentweddings.com/File/Image/m/200/300/33c08cbe-e858-43b0-8eb1-24454c68c017' }
@@ -268,10 +239,10 @@ async function doWork(){
     });
     try{
         console.log('EventPhoto', db_records.length)
-        // await dao.EventPhoto.bulkCreate(db_records);
-        await Promise.all(db_records.map(dao.EventPhoto.create));
+        await dao.EventPhoto.bulkCreate(db_records, 200);
+        // await Promise.all(db_records.map(dao.EventPhoto.create));
     } catch(e){
-        console.log('dao.EventPhoto.bulkCreate(db_records);')
+        console.log('dao.EventPhoto.bulkCreate(db_records, 200);', e)
     }
 
 
@@ -300,10 +271,10 @@ async function doWork(){
     });
     try{
         console.log('User', db_records.length)
-        // await dao.User.bulkCreate(db_records);
-        await Promise.all(db_records.map(dao.User.create));
+        await dao.User.bulkCreate(db_records, 200);
+        // await Promise.all(db_records.map(dao.User.create));
     } catch(e){
-        console.log('dao.User.bulkCreate(db_records);')
+        console.log('dao.User.bulkCreate(db_records, 200);', e)
     }
 
 
@@ -325,10 +296,7 @@ async function doWork(){
             voice_invite_key: item.voice_invite_key,
         };
 
-        // dao.Event.create()
-
         // console.log(item)
-
         // { eventId: 1009,
         //   title: 'Jaxon & Aiden Wedding',
         //   location: 'Santa Fe Springs, Los Angeles, CA',
@@ -337,11 +305,12 @@ async function doWork(){
         //   description: 'Jaxon & Aiden Wedding in Santa Fe Springs, Los Angeles, CA' }
     });
 
-    console.log('Event', db_records.length)
     try{
-        await Promise.all(db_records.map(dao.Event.create));
+        console.log('Event', db_records.length)
+        await dao.Event.bulkCreate(db_records, 200);
+        // await Promise.all(db_records.map(dao.Event.create));
     } catch(e){
-        console.log('dao.Event.bulkCreate(db_records);', e)
+        console.log('dao.Event.bulkCreate(db_records, 200);', e)
     }
 
 
@@ -350,9 +319,33 @@ async function doWork(){
     db_records = data_condifence;
     console.log('Confidence_Score', db_records.length)
     try{
-        await Promise.all(db_records.map(dao.Confidence_Score.create));
+        dao.Confidence_Score.bulkCreate(db_records, 200);
     } catch(e){
-        console.log('dao.Confidence_Score.bulkCreate(db_records);', e)
+        console.log('dao.Confidence_Score.bulkCreate(db_records, 200);', e)
+    }
+
+
+
+    // let db_records;
+    db_records = __attendee_list.map((item) => {
+        return {
+            event_id: item.eventId,
+            email_id: item.emailId,
+            phone_number: item.phoneNumber,
+            guest_name: item.guestName,
+        };
+
+        // console.log(item)
+        // { eventId: 1009,
+        // emailId: 'maya.hunter@yahoo.com',
+        // phoneNumber: '4876731745',
+        // guestName: 'Maya Hunter' }
+    });
+    try{
+        console.log('Invitee', db_records.length)
+        dao.Invitee.bulkCreate(db_records, 200);
+    } catch(e){
+        console.log('dao.Invitee.bulkCreate(db_records, 200);', e)
     }
 }
 
