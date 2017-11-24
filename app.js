@@ -13,8 +13,11 @@ const redisUtil = require('./redisUtil')
 
 
 const _doWork = async function(){
-    await redisUtil.clearAll();
-    console.log('Clear Cache Done...');
+    await Promise.all([
+        redisUtil.clearAll(),
+        dao.init(),
+    ])
+    console.log('Done Init Cache and DB...');
     console.log('Starting Server...');
 
 
