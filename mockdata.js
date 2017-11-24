@@ -208,6 +208,15 @@ async function doWork(){
         });
 
 
+    console.log('=========');
+    console.log('>> __attendee_list', __attendee_list.length);
+    console.log('>> __photo_list', __photo_list.length);
+    console.log('>> data_people', data_people.length);
+    console.log('>> data_events', data_events.length);
+    console.log('>> data_condifence', data_condifence.length);
+
+    console.log('=========');
+
 
     // INSERT TO DATABASE
     // // insert into db
