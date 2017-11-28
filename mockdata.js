@@ -239,7 +239,109 @@ async function doWork(){
     // INSERT TO DATABASE
     // INSERT TO DATABASE
     // INSERT TO DATABASE
-    // // insert into db
+    // DATA PEOPLE
+    db_records = data_people.map((item) => {
+        return {
+            // id: item.userId,
+            username: item.userId,
+            emailid: item.emailId,
+            password: 'password',
+            firstname: item.firstName,
+            lastname: item.lastName,
+            // active: true,
+        };
+
+        // console.log(item)
+        // { emailId: 'grace.adam@gmail.com',
+        //   phoneNumber: '4160826218',
+        //   guestName: 'Grace Adam',
+        //   firstName: 'Grace',
+        //   lastName: 'Adam' }
+    });
+    try{
+        console.log('User', db_records.length)
+        // await dao.User.bulkCreate(db_records, BULK_CREATE_LIMITS);
+        // await Promise.all(db_records.map(dao.User.create));
+
+        const daoModel = dao.User;
+        await Promise.all(db_records.map(item => {
+            try{
+                return daoModel.create(item)
+            } catch(e1){}
+        }));
+    } catch(e){
+        console.log('dao.User.bulkCreate(db_records)', e)
+    }
+
+
+
+
+
+
+
+    // DATA EVENTS
+    db_records = data_events.map((item) => {
+        return {
+            event_id: item.eventId,
+            title: item.title,
+            location: item.location,
+            event_date: item.eventDate,
+            event_time: item.eventTime,
+            description: item.description,
+            user_id: item.userId,
+            voice_invite_key: item.voice_invite_key,
+        };
+
+        // console.log(item)
+        // { eventId: 1009,
+        //   title: 'Jaxon & Aiden Wedding',
+        //   location: 'Santa Fe Springs, Los Angeles, CA',
+        //   eventDate: '01/09/2018',
+        //   eventTime: '09:00 AM',
+        //   description: 'Jaxon & Aiden Wedding in Santa Fe Springs, Los Angeles, CA' }
+    });
+
+    try{
+        console.log('Event', db_records.length)
+        // await dao.Event.bulkCreate(db_records, BULK_CREATE_LIMITS);
+        // await Promise.all(db_records.map(dao.Event.create));
+
+        const daoModel = dao.Event;
+        await Promise.all(db_records.map(item => {
+            try{
+                return daoModel.create(item)
+            } catch(e1){}
+        }));
+    } catch(e){
+        console.log('dao.Event.bulkCreate(db_records)', e)
+    }
+
+
+    // event attendees
+    // ATTENDEE LIST
+    db_records = __attendee_list.map((item) => {
+        return {
+            event_id: item.eventId,
+            email_id: item.emailId,
+            phone_number: item.phoneNumber,
+            guest_name: item.guestName,
+        };
+
+        // console.log(item)
+        // { eventId: 1009,
+        // emailId: 'maya.hunter@yahoo.com',
+        // phoneNumber: '4876731745',
+        // guestName: 'Maya Hunter' }
+    });
+    try{
+        console.log('Invitee', db_records.length)
+        await dao.Invitee.bulkCreate(db_records, BULK_CREATE_LIMITS);
+    } catch(e){
+        console.log('dao.Invitee.bulkCreate(db_records)', e)
+    }
+
+
+    // PHOTO LIST
     db_records = __photo_list.map((item) => {
         return {
             // id: item.id,
@@ -266,76 +368,8 @@ async function doWork(){
 
 
 
-
-
-    db_records = data_people.map((item) => {
-        return {
-            // id: item.userId,
-            username: item.userId,
-            emailid: item.emailId,
-            password: 'password',
-            firstname: item.firstName,
-            lastname: item.lastName,
-            // active: true,
-        };
-
-        // console.log(item)
-        // { emailId: 'grace.adam@gmail.com',
-        //   phoneNumber: '4160826218',
-        //   guestName: 'Grace Adam',
-        //   firstName: 'Grace',
-        //   lastName: 'Adam' }
-    });
-    try{
-        console.log('User', db_records.length)
-        await dao.User.bulkCreate(db_records, BULK_CREATE_LIMITS);
-        // await Promise.all(db_records.map(dao.User.create));
-    } catch(e){
-        console.log('dao.User.bulkCreate(db_records)', e)
-    }
-
-
-
-
-
-
-
-
-    db_records = data_events.map((item) => {
-        return {
-            event_id: item.eventId,
-            title: item.title,
-            location: item.location,
-            event_date: item.eventDate,
-            event_time: item.eventTime,
-            description: item.description,
-            user_id: item.userId,
-            voice_invite_key: item.voice_invite_key,
-        };
-
-        // console.log(item)
-        // { eventId: 1009,
-        //   title: 'Jaxon & Aiden Wedding',
-        //   location: 'Santa Fe Springs, Los Angeles, CA',
-        //   eventDate: '01/09/2018',
-        //   eventTime: '09:00 AM',
-        //   description: 'Jaxon & Aiden Wedding in Santa Fe Springs, Los Angeles, CA' }
-    });
-
-    try{
-        console.log('Event', db_records.length)
-        await dao.Event.bulkCreate(db_records, BULK_CREATE_LIMITS);
-        // await Promise.all(db_records.map(dao.Event.create));
-    } catch(e){
-        console.log('dao.Event.bulkCreate(db_records)', e)
-    }
-
-
-
-
-
-
-    // condifdence score
+    // confidence score
+    // DATA CONFIDENCE
     db_records = data_confidence.map((item) => {
         return {
             username: item.username,
@@ -350,30 +384,6 @@ async function doWork(){
         // await Promise.all(db_records.map(dao.BotConfidence.create));
     } catch(e){
         console.log('dao.BotConfidence.bulkCreate(db_records)', e)
-    }
-
-
-
-
-    db_records = __attendee_list.map((item) => {
-        return {
-            event_id: item.eventId,
-            email_id: item.emailId,
-            phone_number: item.phoneNumber,
-            guest_name: item.guestName,
-        };
-
-        // console.log(item)
-        // { eventId: 1009,
-        // emailId: 'maya.hunter@yahoo.com',
-        // phoneNumber: '4876731745',
-        // guestName: 'Maya Hunter' }
-    });
-    try{
-        console.log('Invitee', db_records.length)
-        await dao.Invitee.bulkCreate(db_records, BULK_CREATE_LIMITS);
-    } catch(e){
-        console.log('dao.Invitee.bulkCreate(db_records)', e)
     }
 }
 
