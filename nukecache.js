@@ -8,3 +8,12 @@ async function _doWork(){
 };
 
 _doWork();
+
+
+// manual nuke sql...
+/*
+DELETE FROM `event_photo` WHERE id > 5;
+DELETE FROM `invitee` WHERE id > 5;
+DELETE FROM `event` WHERE user_id != 'adam';
+DELETE FROM `event_users` WHERE user_id != 'adam';
+ */
