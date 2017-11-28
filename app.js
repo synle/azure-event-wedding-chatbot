@@ -41,6 +41,7 @@ const _doWork = async function(){
             {
                 // username: req.session.username,
                 BOT_URL: process.env.BOT_URL,
+                MAIN_WEBAPP_URL: process.env.MAIN_WEBAPP_URL,
             }
         )
     })
@@ -52,6 +53,7 @@ const _doWork = async function(){
             path.join( __dirname + '/view/powerbi_report.html' ),
             {
                 POWER_BI_REPORT_URL: process.env.POWER_BI_REPORT_URL,
+                MAIN_WEBAPP_URL: process.env.MAIN_WEBAPP_URL,
             }
         )
     })
