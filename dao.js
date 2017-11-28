@@ -90,7 +90,7 @@ var Invitee = sequelizeAdapter.define(
 var User = sequelizeAdapter.define(
     'event_users',
     {
-        username: { type: Sequelize.DataTypes.STRING, field: 'user_id'  },
+        username: { type: Sequelize.DataTypes.STRING, field: 'user_id', primaryKey: true},
         firstname: { type: Sequelize.DataTypes.STRING, field: 'first_name' },
         lastname: { type: Sequelize.DataTypes.STRING, field: 'last_name' },
         emailid: { type: Sequelize.DataTypes.STRING, field: 'mail_id'},
