@@ -1,7 +1,7 @@
 # azure-event-wedding-chatbot
 ## CMPE 281 Final Project - Chatbot section
 - Student: Sy Le (https://www.linkedin.com/in/syle1021/)
-- University Name: http://www.sjsu.edu/
+- University Name: San Jose State University (http://www.sjsu.edu/)
 - Course: Cloud Technologies (http://info.sjsu.edu/web-dbgen/catalog/courses/CMPE281.html)
 - Professor Sanjay Garje (https://www.linkedin.com/in/sanjaygarje/)
 - ISA: Divyankitha Urs (https://www.linkedin.com/in/divyankithaurs/)
@@ -35,6 +35,8 @@
 - https://docs.microsoft.com/en-us/azure/mysql/howto-configure-ssl
 - https://stackoverflow.com/questions/13406663/how-can-i-allow-unknown-users-to-access-my-sql-azure-db
 
+
+### Mocking the database
 ```
 node nukecache.js ; node nukedata.js ; node mockdata.js
 ```
