@@ -9,7 +9,7 @@
 
 
 ## Urls
-- (Demo Url)[http://eventplanner.themodestwhite.com]
+- [Demo Url](http://eventplanner.themodestwhite.com)
 
 ### Sample Demo Screenshots
 ![alt text](./images/1.png "Sample Screenshot")
