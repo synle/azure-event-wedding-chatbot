@@ -184,7 +184,13 @@ const _doWork = async function(){
                 // set the new value into cache
                 await redisUtil.set(session.userData.cache_key, my_events);
             }
-            session.userData.my_events = my_events
+            session.userData.my_events = my_events;
+            
+            console.log(session.userData.my_events);
+            
+            if(!session.userData.my_events){
+                session.userData.my_events = [];
+            }
 
 
             session.userData.my_events.map((cur_event) => {
