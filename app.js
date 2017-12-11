@@ -239,12 +239,18 @@ const _doWork = async function(){
                s3url = process.env.S3_BUCKET_SRC + s3url;
             }
 
-            var msg = new builder.Message(session)
-                .attachments([{
-                    contentType: "image/jpeg",
-                    contentUrl: s3url,
-                }]);
-            session.send(msg);
+            
+            if(s3url){
+                var msg = new builder.Message(session)
+                    .attachments([{
+                        contentType: "image/jpeg",
+                        contentUrl: s3url,
+                    }]);
+                session.send(s3url);
+                session.send(msg);
+                
+                console.log(s3url);
+            }
 
 
             session.send(`Map for this event: https://www.google.com/maps/place/?q=${encodeURIComponent(cur_event.location)}`)
