@@ -232,12 +232,17 @@ const _doWork = async function(){
                 `- Location: ${cur_event.location}`,
                 `- Total Attendees: ${session.dialogData.selected_event_invitees.length}`
             ].join('\n'));
-
+            
+            
+            var s3url = session.dialogData.selected_event_photos[0].s3url;
+            if(s3url && s3url.indexOf('http') === -1 && process.env.S3_BUCKET_SRC){
+               s3url = process.env.S3_BUCKET_SRC + s3url;
+            }
 
             var msg = new builder.Message(session)
                 .attachments([{
                     contentType: "image/jpeg",
-                    contentUrl: session.dialogData.selected_event_photos[0].s3url
+                    contentUrl: s3url,
                 }]);
             session.send(msg);
 
